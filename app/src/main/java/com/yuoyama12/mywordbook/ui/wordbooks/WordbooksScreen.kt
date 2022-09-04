@@ -9,11 +9,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.components.SimpleInputDialog
 
 @Composable
 fun WordbooksScreen() {
+
+    val viewModel: WordbooksViewModel = hiltViewModel()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -43,9 +47,8 @@ fun WordbooksScreen() {
                         textFieldHint = stringResource(R.string.dialog_add_wordbook_hint),
                         positiveButtonText = stringResource(R.string.dialog_add_workbook_positive_button),
                         onDismissRequest = { openAddDialog = false }
-                    ) { inputtedText ->
-
-
+                    ) { name ->
+                        viewModel.addNewWordbook(name)
                     }
                 }
 
