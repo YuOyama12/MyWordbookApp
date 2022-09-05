@@ -13,4 +13,8 @@ class WordbookRepository @Inject constructor(
     suspend fun insertWordbook(wordbook: Wordbook) {
         wordbookDao.insertWordbook(wordbook)
     }
+
+    suspend fun deleteWordbook(wordbook: Wordbook) {
+        wordbookDao.deleteWordbook(wordbook)
+    }
 }

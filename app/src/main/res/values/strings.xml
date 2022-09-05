@@ -9,4 +9,12 @@
         <item>名前の変更</item>
         <item>削除</item>
     </string-array>
+    <string name="dialog_rename_title">名前変更</string>
+    <string name="dialog_rename_message">新しい名前を入力してください</string>
+    <string name="dialog_rename_positive_button">変更</string>
+    <string name="dialog_rename_hint">新しい名前を入力</string>
+    <string name="dialog_delete_confirmation_title">削除確認</string>
+    <string name="dialog_delete_confirmation_message">%sを削除しますか？</string>
+    <string name="dialog_delete_confirmation_positive_button">削除</string>
+    <string name="delete_complete_message">削除しました</string>
 </resources>

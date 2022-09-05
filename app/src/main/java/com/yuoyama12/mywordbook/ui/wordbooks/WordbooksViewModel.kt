@@ -28,11 +28,23 @@ class WordbooksViewModel @Inject constructor(
         }
     }
 
-
     fun addNewWordbook(name: String) {
         val wordbook = Wordbook(name = name)
         viewModelScope.launch(Dispatchers.IO) {
             wordbookRepo.insertWordbook(wordbook)
+        }
+    }
+
+    fun renameWordbook(wordbook: Wordbook, newName: String) {
+        val renamedWordbook = wordbook.copy(name = newName)
+        viewModelScope.launch(Dispatchers.IO) {
+            wordbookRepo.insertWordbook(renamedWordbook)
+        }
+    }
+
+    fun deleteWordbook(wordbook: Wordbook) {
+        viewModelScope.launch(Dispatchers.IO) {
+            wordbookRepo.deleteWordbook(wordbook)
         }
     }
 

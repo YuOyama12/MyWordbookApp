@@ -1,5 +1,6 @@
 package com.yuoyama12.mywordbook.ui.wordbooks
 
+import android.widget.Toast
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.PressGestureScope
@@ -14,11 +15,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
+import com.yuoyama12.mywordbook.components.ConfirmationDialog
 import com.yuoyama12.mywordbook.components.SimpleInputDialog
 import com.yuoyama12.mywordbook.components.SimplePopupMenu
 import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
@@ -97,10 +101,14 @@ private fun WordbookList(
     ) {
         items(
             items = viewModel.wordbookAndWords
-        ) { wordbook ->
+        ) { wordbookAndWords ->
 
+            val context = LocalContext.current
             val interactionSource = remember { MutableInteractionSource() }
-            var expandPopup by remember { mutableStateOf(false) }
+            var expandPopupMenu by remember { mutableStateOf(false) }
+
+            var openRenameDialog by rememberSaveable { mutableStateOf(false) }
+            var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
             Card (
                 elevation = 8.dp,
@@ -125,14 +133,14 @@ private fun WordbookList(
                                 showRippleEffect(interactionSource, it)
                             },
                             onLongPress = {
-                                expandPopup = true
+                                expandPopupMenu = true
                             },
                             onTap = { }
                         )
                     }
             ) {
                 Text(
-                    text = wordbook.wordbook.name,
+                    text = wordbookAndWords.wordbook.name,
                     fontSize = wordbookNameFontSize,
                     modifier = Modifier.padding(
                         horizontal = 20.dp,
@@ -141,19 +149,52 @@ private fun WordbookList(
                     fontWeight = FontWeight.SemiBold
                 )
 
-                if (expandPopup) {
+                if (expandPopupMenu) {
                     SimplePopupMenu(
                         modifier = Modifier
                             .wrapContentSize(Alignment.BottomEnd)
                             .offset(y = 20.dp),
-                        clickedItemContent = wordbook,
+                        clickedItemContent = wordbookAndWords,
                         menuItems = stringArrayResource(R.array.wordbook_list_popup_menu),
-                        onDismissRequest = { expandPopup = false }
-                    ) { index, wordbookAndWords ->
+                        onDismissRequest = { expandPopupMenu = false }
+                    ) { index, _ ->
                         when(index) {
-                            0 -> {  }
-                            1 -> {  }
+                            0 -> { openRenameDialog = true }
+                            1 -> { openDeleteDialog = true }
                         }
+                    }
+                }
+
+                if (openRenameDialog) {
+                    SimpleInputDialog(
+                        title = stringResource(R.string.dialog_rename_title),
+                        message = stringResource(R.string.dialog_rename_message),
+                        preInputtedText = wordbookAndWords.wordbook.name,
+                        textFieldHint = stringResource(R.string.dialog_rename_hint),
+                        positiveButtonText = stringResource(R.string.dialog_rename_positive_button),
+                        onDismissRequest = { openRenameDialog = false }
+                    ) { newName ->
+                        if (newName.trim() != "")
+                            viewModel.renameWordbook(wordbookAndWords.wordbook, newName)
+                    }
+                }
+
+                if (openDeleteDialog) {
+                    val deleteCompleteMsg =
+                        stringResource(R.string.delete_complete_message)
+
+                    ConfirmationDialog (
+                        title = stringResource(R.string.dialog_delete_confirmation_title),
+                        message = stringResource(
+                            R.string.dialog_delete_confirmation_message,
+                            wordbookAndWords.wordbook.name
+                        ),
+                        positiveButtonText = stringResource(R.string.dialog_delete_confirmation_positive_button),
+                        onDismissRequest = { openDeleteDialog = false }
+                    ) {
+                        viewModel.deleteWordbook(wordbookAndWords.wordbook)
+
+                        Toast.makeText(context, deleteCompleteMsg, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

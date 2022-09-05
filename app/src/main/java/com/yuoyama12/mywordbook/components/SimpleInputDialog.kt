@@ -77,7 +77,9 @@ fun SimpleInputDialog(
                         }
                         TextButton(
                             onClick = {
-                                onPositiveButtonClicked(inputtedText)
+                                if (inputtedText.trim() != preInputtedText) {
+                                    onPositiveButtonClicked(inputtedText)
+                                }
                                 onDismissRequest()
                             }
                         ) {

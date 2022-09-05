@@ -12,4 +12,7 @@ interface WordbookDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWordbook(wordbook: Wordbook)
+
+    @Delete
+    suspend fun deleteWordbook(wordbook: Wordbook)
 }
