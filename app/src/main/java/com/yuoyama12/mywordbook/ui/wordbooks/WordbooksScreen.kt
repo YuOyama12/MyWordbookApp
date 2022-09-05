@@ -1,22 +1,37 @@
 package com.yuoyama12.mywordbook.ui.wordbooks
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.components.SimpleInputDialog
+import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
+import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
+
+private val wordbookNameFontSize = 30.sp
 
 @Composable
-fun WordbooksScreen() {
-
-    val viewModel: WordbooksViewModel = hiltViewModel()
+fun WordbooksScreen(
+    viewModel: WordbooksViewModel = hiltViewModel()
+) {
+    LaunchedEffect(Unit) {
+        viewModel.loadWordbookAndWords()
+    }
 
     Scaffold(
         topBar = {
@@ -58,6 +73,50 @@ fun WordbooksScreen() {
         Column(
             modifier = Modifier.padding(padding)
         ) {
+            WordbookList(viewModel = viewModel)
+        }
+    }
+}
+
+@Composable
+private fun WordbookList(
+    modifier: Modifier = Modifier,
+    viewModel: WordbooksViewModel
+) {
+    LazyColumn(
+        modifier = modifier
+    ) {
+        items(
+            items = viewModel.wordbookAndWords
+        ) { wordbook ->
+
+            Card (
+                elevation = 8.dp,
+                backgroundColor = wordbookBackgroundColor(),
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = 10.dp,
+                        start = 30.dp,
+                        end = 60.dp,
+                        bottom = 10.dp
+                    )
+                    .border(
+                        width = 1.2.dp,
+                        color = wordbookBorderColor(),
+                        shape = RectangleShape
+                    )
+            ) {
+                Text(
+                    text = wordbook.wordbook.name,
+                    fontSize = wordbookNameFontSize,
+                    modifier = Modifier.padding(
+                        horizontal = 20.dp,
+                        vertical = 20.dp
+                    ),
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
 
         }
     }
