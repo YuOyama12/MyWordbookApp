@@ -1,17 +1,25 @@
 package com.yuoyama12.mywordbook.ui.wordbooks
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.gestures.PressGestureScope
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -20,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.components.SimpleInputDialog
+import com.yuoyama12.mywordbook.components.SimplePopupMenu
 import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
 
@@ -90,6 +99,9 @@ private fun WordbookList(
             items = viewModel.wordbookAndWords
         ) { wordbook ->
 
+            val interactionSource = remember { MutableInteractionSource() }
+            var expandPopup by remember { mutableStateOf(false) }
+
             Card (
                 elevation = 8.dp,
                 backgroundColor = wordbookBackgroundColor(),
@@ -106,6 +118,18 @@ private fun WordbookList(
                         color = wordbookBorderColor(),
                         shape = RectangleShape
                     )
+                    .indication(interactionSource, LocalIndication.current)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                showRippleEffect(interactionSource, it)
+                            },
+                            onLongPress = {
+                                expandPopup = true
+                            },
+                            onTap = { }
+                        )
+                    }
             ) {
                 Text(
                     text = wordbook.wordbook.name,
@@ -116,8 +140,36 @@ private fun WordbookList(
                     ),
                     fontWeight = FontWeight.SemiBold
                 )
+
+                if (expandPopup) {
+                    SimplePopupMenu(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.BottomEnd)
+                            .offset(y = 20.dp),
+                        clickedItemContent = wordbook,
+                        menuItems = stringArrayResource(R.array.wordbook_list_popup_menu),
+                        onDismissRequest = { expandPopup = false }
+                    ) { index, wordbookAndWords ->
+                        when(index) {
+                            0 -> {  }
+                            1 -> {  }
+                        }
+                    }
+                }
             }
 
         }
     }
+}
+
+
+suspend fun PressGestureScope.showRippleEffect(
+    interactionSource: MutableInteractionSource,
+    pressedOffset: Offset
+) {
+    val pressed = PressInteraction.Press(pressedOffset)
+    interactionSource.emit(pressed)
+    tryAwaitRelease()
+    interactionSource.emit(PressInteraction.Release(pressed))
+
 }
