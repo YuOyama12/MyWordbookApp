@@ -33,6 +33,7 @@ import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.components.ConfirmationDialog
 import com.yuoyama12.mywordbook.components.SimpleInputDialog
 import com.yuoyama12.mywordbook.components.SimplePopupMenu
+import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
 
@@ -40,7 +41,8 @@ private val wordbookNameFontSize = 30.sp
 
 @Composable
 fun WordbooksScreen(
-    viewModel: WordbooksViewModel = hiltViewModel()
+    viewModel: WordbooksViewModel = hiltViewModel(),
+    onWordbookClicked: (Wordbook) -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadWordbookAndWords()
@@ -86,7 +88,10 @@ fun WordbooksScreen(
         Column(
             modifier = Modifier.padding(padding)
         ) {
-            WordbookList(viewModel = viewModel)
+            WordbookList(
+                viewModel = viewModel,
+                onWordbookClicked = onWordbookClicked
+            )
         }
     }
 }
@@ -94,7 +99,8 @@ fun WordbooksScreen(
 @Composable
 private fun WordbookList(
     modifier: Modifier = Modifier,
-    viewModel: WordbooksViewModel
+    viewModel: WordbooksViewModel,
+    onWordbookClicked: (Wordbook) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -135,7 +141,13 @@ private fun WordbookList(
                             onLongPress = {
                                 expandPopupMenu = true
                             },
-                            onTap = { }
+                            onTap = {
+                                //名前を変更した場合、古い名前を含むデータを受け取るため。
+                                val latestWordbook =
+                                    viewModel.getLatestWordbookBy(wordbookAndWords.wordbook.id)
+
+                                onWordbookClicked(latestWordbook)
+                            }
                         )
                     }
             ) {

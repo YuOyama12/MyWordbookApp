@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">My単語帳</string>
+    <string name="words_screen_app_bar_header">の単語リスト</string>
     <string name="fab_add_desc">追加</string>
     <string name="dialog_cancel">キャンセル</string>
     <string name="dialog_add_wordbook_title">単語帳の作成</string>

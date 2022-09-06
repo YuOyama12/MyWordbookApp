@@ -48,4 +48,13 @@ class WordbooksViewModel @Inject constructor(
         }
     }
 
+    fun getLatestWordbookBy(wordbookId: Long): Wordbook {
+        wordbookAndWords.forEach { wordbookAndWords ->
+            if (wordbookAndWords.wordbook.id == wordbookId) {
+                return wordbookAndWords.wordbook
+            }
+        }
+        throw Exception("Couldn't find any wordbook from the given workbookId!")
+    }
+
 }
