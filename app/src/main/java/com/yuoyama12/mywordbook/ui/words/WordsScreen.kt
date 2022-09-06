@@ -63,7 +63,13 @@ fun WordsScreen(
                 )
 
                 if (openAddDialog) {
-
+                    InsertWordDialog(
+                        title = stringResource(R.string.dialog_add_word_title),
+                        message = stringResource(R.string.dialog_add_word_message),
+                        wordbookId = wordbook.id,
+                        positiveButtonText = stringResource(R.string.dialog_add_workbook_positive_button),
+                        onDismissRequest = { openAddDialog = false }
+                    )
                 }
 
             }
