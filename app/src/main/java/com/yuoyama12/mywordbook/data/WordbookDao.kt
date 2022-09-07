@@ -2,6 +2,7 @@ package com.yuoyama12.mywordbook.data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import java.util.*
 
 @Dao
 interface WordbookDao {
@@ -12,6 +13,12 @@ interface WordbookDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWordbook(wordbook: Wordbook)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertWord(word: Word)
+
+    @Query("UPDATE Wordbook SET modifiedDate = :currentDate WHERE id = :wordbookId")
+    suspend fun updateWordbookModifiedDate(wordbookId: Long, currentDate: Date)
 
     @Delete
     suspend fun deleteWordbook(wordbook: Wordbook)

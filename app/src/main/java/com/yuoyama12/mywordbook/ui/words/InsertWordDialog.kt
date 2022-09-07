@@ -25,8 +25,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.data.Word
+
+private val Spacer = Modifier.padding(vertical = 4.dp)
 
 @Composable
 fun InsertWordDialog(
@@ -36,8 +39,10 @@ fun InsertWordDialog(
     word: Word? = null,
     hasConsecutivelyAddButton: Boolean = true,
     positiveButtonText: String,
-    onDismissRequest: () -> Unit,
+    onDismissRequest: () -> Unit
 ) {
+    val viewModel: WordsViewModel = hiltViewModel()
+
     val preInputtedWord = word?.word ?:""
     val preInputtedMeaning = word?.meaning ?: ""
 
@@ -161,6 +166,14 @@ fun InsertWordDialog(
                                 onDismissRequest = onDismissRequest
                             ) { wordText, meaningText ->
 
+                                insertWord(
+                                    viewModel,
+                                    word,
+                                    wordbookId,
+                                    wordText,
+                                    meaningText
+                                )
+
                                 wordInfo = ""
                                 meaningInfo = TextFieldValue()
                             }
@@ -178,6 +191,13 @@ fun InsertWordDialog(
                             onDismissRequest = onDismissRequest
                         ) { wordText, meaningText ->
 
+                            insertWord(
+                                viewModel,
+                                word,
+                                wordbookId,
+                                wordText,
+                                meaningText
+                            )
 
                             onDismissRequest()
                         }
@@ -239,9 +259,6 @@ private fun AddButton(
     }
 }
 
-private val Spacer = Modifier.padding(vertical = 4.dp)
-
-
 private fun insertTagTextAfterCursor(
     tagText: String,
     textFieldValue: TextFieldValue,
@@ -260,5 +277,24 @@ private fun insertTagTextAfterCursor(
     val selection = TextRange((firstSplitText + tagText).length)
 
     onTextFieldValueChange(textWithTag, selection)
+}
 
+
+private fun insertWord(
+    viewModel: WordsViewModel,
+    originalWord: Word?,
+    wordbookId: Long,
+    wordText: String,
+    meaningText: String
+) {
+    //更新するためのWordデータがなければ、新しくWordbookIdを用いて作成する
+    val newWord =
+        originalWord?.copy(
+            word = wordText, meaning = meaningText, modifiedDate = viewModel.currentDate
+        )
+        ?: Word(
+            wordbookId = wordbookId, word = wordText, meaning = meaningText, modifiedDate = viewModel.currentDate
+        )
+
+    viewModel.insertWord(newWord)
 }
