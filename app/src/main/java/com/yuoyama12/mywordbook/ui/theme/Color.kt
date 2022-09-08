@@ -21,3 +21,11 @@ fun wordbookBorderColor() =
     if (isSystemInDarkTheme()) colorResource(R.color.light_gray)
     else Color.DarkGray
 
+@Composable
+fun wordCardBorderColor() = wordbookBorderColor()
+
+@Composable
+fun wordCardBackgroundColor() =
+    if (isSystemInDarkTheme()) colorResource(R.color.oliva)
+    else colorResource(R.color.lemon_chiffon)
+

@@ -11,15 +11,19 @@ interface WordbookDao {
     @Query("SELECT * FROM Wordbook")
     fun loadWordbookAndWords(): Flow<List<WordbookAndWords>>
 
+    @Transaction
+    @Query("SELECT * FROM Word WHERE wordbook_id = :wordbookId")
+    fun loadWordsBy(wordbookId: Long): Flow<List<Word>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWordbook(wordbook: Wordbook)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWord(word: Word)
 
-    @Query("UPDATE Wordbook SET modifiedDate = :currentDate WHERE id = :wordbookId")
-    suspend fun updateWordbookModifiedDate(wordbookId: Long, currentDate: Date)
-
     @Delete
     suspend fun deleteWordbook(wordbook: Wordbook)
+
+    @Query("UPDATE Wordbook SET modifiedDate = :currentDate WHERE id = :wordbookId")
+    suspend fun updateWordbookModifiedDate(wordbookId: Long, currentDate: Date)
 }

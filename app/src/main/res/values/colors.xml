@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="light_gray">#EBEBEB</color>
     <color name="gray_900">#212121</color>
+    <color name="lemon_chiffon">#FFFFFACD</color>
+    <color name="oliva">#333314</color>
 </resources>

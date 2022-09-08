@@ -11,6 +11,10 @@ class WordbookRepository @Inject constructor(
         return wordbookDao.loadWordbookAndWords()
     }
 
+    fun loadWordsBy(wordbookId: Long): Flow<List<Word>> {
+        return wordbookDao.loadWordsBy(wordbookId)
+    }
+
     suspend fun insertWordbook(wordbook: Wordbook) {
         wordbookDao.insertWordbook(wordbook)
     }
