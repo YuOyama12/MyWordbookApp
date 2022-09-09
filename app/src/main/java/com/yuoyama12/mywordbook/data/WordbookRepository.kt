@@ -23,11 +23,17 @@ class WordbookRepository @Inject constructor(
         wordbookDao.insertWord(word)
     }
 
+    suspend fun deleteWordbook(wordbook: Wordbook) {
+        wordbookDao.deleteWordbook(wordbook)
+    }
+
+    suspend fun deleteWord(word: Word) {
+        wordbookDao.deleteWord(word)
+    }
+
+
     suspend fun updateWordbookModifiedDate(wordbookId: Long, currentDate: Date) {
         wordbookDao.updateWordbookModifiedDate(wordbookId, currentDate)
     }
 
-    suspend fun deleteWordbook(wordbook: Wordbook) {
-        wordbookDao.deleteWordbook(wordbook)
-    }
 }

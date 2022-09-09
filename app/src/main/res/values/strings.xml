@@ -16,9 +16,16 @@
     <string name="dialog_rename_hint">新しい名前を入力</string>
     <string name="dialog_delete_confirmation_title">削除確認</string>
     <string name="dialog_delete_confirmation_message">%sを削除しますか？</string>
+    <string name="dialog_delete_confirmation_message_no_name">削除しますか？</string>
     <string name="dialog_delete_confirmation_positive_button">削除</string>
     <string name="delete_complete_message">削除しました</string>
     <string name="dialog_add_word_title">単語情報の入力</string>
     <string name="dialog_add_word_message">*追加にはどちらかを入力している必要があります</string>
     <string name="dialog_add_word_consecutively_add_button">連続して追加</string>
+    <string-array name="word_list_popup_menu">
+        <item>単語情報の変更</item>
+        <item>削除</item>
+    </string-array>
+    <string name="dialog_edit_word_title">単語情報の変更</string>
+    <string name="dialog_edit_word_positive_button">変更</string>
 </resources>

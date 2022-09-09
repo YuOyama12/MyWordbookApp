@@ -1,6 +1,11 @@
 package com.yuoyama12.mywordbook.ui.words
 
+import android.widget.Toast
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,17 +15,24 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
+import com.yuoyama12.mywordbook.components.ConfirmationDialog
+import com.yuoyama12.mywordbook.components.SimplePopupMenu
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.ui.theme.wordCardBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
+import com.yuoyama12.mywordbook.ui.wordbooks.showRippleEffect
 
 private val fontSize = 16.sp
 private val cardMinHeight = 85.dp
@@ -113,6 +125,13 @@ fun WordsList(
             items = viewModel.words
         ) { word ->
 
+            val context = LocalContext.current
+            val interactionSource = remember { MutableInteractionSource() }
+            var expandPopupMenu by remember { mutableStateOf(false) }
+
+            var openEditDialog by rememberSaveable { mutableStateOf(false) }
+            var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
+
             Card(
                 elevation = 8.dp,
                 backgroundColor = wordCardBackgroundColor(),
@@ -131,6 +150,14 @@ fun WordsList(
                         color = wordbookBorderColor(),
                         shape = RectangleShape
                     )
+                    .indication(interactionSource, LocalIndication.current)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = { showRippleEffect(interactionSource, it) },
+                            onLongPress = { expandPopupMenu = true },
+                            onTap = { }
+                        )
+                    }
             ) {
                 Row(
                     modifier = Modifier.fillMaxSize()
@@ -160,6 +187,50 @@ fun WordsList(
                     )
 
                 }
+
+                if (expandPopupMenu) {
+                    SimplePopupMenu(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.BottomEnd)
+                            .offset(y = 20.dp),
+                        clickedItemContent = word,
+                        menuItems = stringArrayResource(R.array.word_list_popup_menu),
+                        onDismissRequest = { expandPopupMenu = false }
+                    ) { index, _ ->
+                           when(index) {
+                               0 -> { openEditDialog = true }
+                               1 -> { openDeleteDialog = true }
+                           }
+                    }
+                }
+
+                if (openEditDialog) {
+                    InsertWordDialog(
+                        title = stringResource(R.string.dialog_edit_word_title),
+                        wordbookId = word.wordbookId,
+                        word = word,
+                        hasConsecutivelyAddButton = false,
+                        positiveButtonText = stringResource(R.string.dialog_edit_word_positive_button),
+                        onDismissRequest = { openEditDialog = false }
+                    )
+                }
+
+                if (openDeleteDialog) {
+                    val deleteCompleteMsg =
+                        stringResource(R.string.delete_complete_message)
+
+                    ConfirmationDialog(
+                        title = stringResource(R.string.dialog_delete_confirmation_title),
+                        message = stringResource(R.string.dialog_delete_confirmation_message_no_name),
+                        positiveButtonText = stringResource(R.string.dialog_delete_confirmation_positive_button),
+                        onDismissRequest = { openDeleteDialog = false }
+                    ) {
+                        viewModel.deleteWord(word)
+
+                        Toast.makeText(context, deleteCompleteMsg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
             }
         }
     }

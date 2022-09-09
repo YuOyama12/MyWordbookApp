@@ -24,6 +24,9 @@ interface WordbookDao {
     @Delete
     suspend fun deleteWordbook(wordbook: Wordbook)
 
+    @Delete
+    suspend fun deleteWord(word: Word)
+
     @Query("UPDATE Wordbook SET modifiedDate = :currentDate WHERE id = :wordbookId")
     suspend fun updateWordbookModifiedDate(wordbookId: Long, currentDate: Date)
 }

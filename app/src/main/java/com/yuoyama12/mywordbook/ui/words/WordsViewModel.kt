@@ -1,5 +1,6 @@
 package com.yuoyama12.mywordbook.ui.words
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,7 +39,15 @@ class WordsViewModel @Inject constructor(
         }
     }
 
+    fun deleteWord(word: Word) {
+        viewModelScope.launch(Dispatchers.IO) {
+            wordbookRepo.deleteWord(word)
+            updateWordbookModifiedDate(word.wordbookId)
+        }
+    }
+
    private suspend fun updateWordbookModifiedDate(wordbookId: Long) {
+       Log.d("更新日：", "$currentDate")
        wordbookRepo.updateWordbookModifiedDate(wordbookId, currentDate)
     }
 }
