@@ -192,7 +192,7 @@ fun WordsList(
                     SimplePopupMenu(
                         modifier = Modifier
                             .wrapContentSize(Alignment.BottomEnd)
-                            .offset(y = 20.dp),
+                            .offset(y = (-20).dp),
                         clickedItemContent = word,
                         menuItems = stringArrayResource(R.array.word_list_popup_menu),
                         onDismissRequest = { expandPopupMenu = false }

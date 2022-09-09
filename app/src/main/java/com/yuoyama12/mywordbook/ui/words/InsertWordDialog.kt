@@ -43,8 +43,11 @@ fun InsertWordDialog(
 ) {
     val viewModel: WordsViewModel = hiltViewModel()
 
-    val preInputtedWord = word?.word ?:""
-    val preInputtedMeaning = word?.meaning ?: ""
+    if (word != null) viewModel.nullifyTemporarilyStoredData()
+
+
+    val preInputtedWord = word?.word ?: viewModel.storedWordText ?: ""
+    val preInputtedMeaning = word?.meaning ?: viewModel.storedMeaningText ?: ""
 
     var wordInfo by rememberSaveable { mutableStateOf(preInputtedWord) }
 
@@ -56,7 +59,19 @@ fun InsertWordDialog(
     }
 
     Dialog(
-        onDismissRequest = { onDismissRequest() }
+        onDismissRequest = {
+            //単語追加時のみ、誤ってダイアログを消してしまった場合、
+            //一時保存をしておくため。
+            if (word == null &&
+                (wordInfo.trim() != "" ||
+                        meaningInfo.text.trim() != "")
+            ) {
+                viewModel.storeTextsTemporarily(wordbookId, wordInfo, meaningInfo.text)
+            }
+
+
+            onDismissRequest()
+        }
     ) {
         val focusManager = LocalFocusManager.current
 
@@ -161,10 +176,11 @@ fun InsertWordDialog(
                                 buttonText = stringResource(R.string.dialog_add_word_consecutively_add_button),
                                 wordInfo = wordInfo,
                                 meaningInfo = meaningInfo.text,
-                                preInputtedWord = preInputtedWord,
-                                preInputtedMeaning = preInputtedMeaning,
+                                word = word,
                                 onDismissRequest = onDismissRequest
                             ) { wordText, meaningText ->
+
+                                viewModel.nullifyTemporarilyStoredData()
 
                                 insertWord(
                                     viewModel,
@@ -179,17 +195,23 @@ fun InsertWordDialog(
                             }
                         }
 
-                        TextButton(onClick = { onDismissRequest() }) {
+                        TextButton(
+                            onClick = {
+                                viewModel.nullifyTemporarilyStoredData()
+                                onDismissRequest()
+                            }
+                        ) {
                             Text(stringResource(R.string.dialog_cancel))
                         }
 
                         AddButton(buttonText = positiveButtonText,
                             wordInfo = wordInfo,
                             meaningInfo = meaningInfo.text,
-                            preInputtedWord = preInputtedWord,
-                            preInputtedMeaning = preInputtedMeaning,
+                            word = word,
                             onDismissRequest = onDismissRequest
                         ) { wordText, meaningText ->
+
+                            viewModel.nullifyTemporarilyStoredData()
 
                             insertWord(
                                 viewModel,
@@ -239,15 +261,14 @@ private fun AddButton(
     buttonText: String,
     wordInfo: String,
     meaningInfo: String,
-    preInputtedWord: String,
-    preInputtedMeaning: String,
+    word: Word?,
     onDismissRequest: () -> Unit,
     onClicked: (word: String, meaning: String) -> Unit
 ) {
     TextButton(
         onClick = {
-            if (wordInfo.trim() == preInputtedWord &&
-                meaningInfo.trim() == preInputtedMeaning) {
+            if (wordInfo.trim() == (word?.word ?: "") &&
+                meaningInfo.trim() == (word?.meaning ?: "")) {
                 onDismissRequest()
                 return@TextButton
             }

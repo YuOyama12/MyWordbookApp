@@ -1,6 +1,5 @@
 package com.yuoyama12.mywordbook.ui.words
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,8 +21,30 @@ class WordsViewModel @Inject constructor(
     private var _words by mutableStateOf(emptyList<Word>())
     val words get() = _words
 
+    private var _storedWordbookId: Long? = null
+    val storedWordbookId get() = _storedWordbookId
+
+    private var _storedWordText: String? = null
+    val storedWordText get () = _storedWordText
+
+    private var _storedMeaningText: String? = null
+    val storedMeaningText get() = _storedMeaningText
+
     val currentDate: Date
         get() {  return Date(System.currentTimeMillis()) }
+
+
+    fun storeTextsTemporarily(wordbookId: Long, wordText: String, meaningText: String) {
+        _storedWordbookId = wordbookId
+        _storedWordText = wordText
+        _storedMeaningText = meaningText
+    }
+
+    fun nullifyTemporarilyStoredData() {
+        _storedWordbookId = null
+        _storedWordText = null
+        _storedMeaningText = null
+    }
 
     fun loadWordsBy(wordbookId: Long) =
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,7 +68,6 @@ class WordsViewModel @Inject constructor(
     }
 
    private suspend fun updateWordbookModifiedDate(wordbookId: Long) {
-       Log.d("更新日：", "$currentDate")
        wordbookRepo.updateWordbookModifiedDate(wordbookId, currentDate)
     }
 }

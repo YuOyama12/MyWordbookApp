@@ -1,13 +1,17 @@
 package com.yuoyama12.mywordbook.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.yuoyama12.mywordbook.R
@@ -63,7 +67,16 @@ fun SimpleInputDialog(
                         value = inputtedText,
                         onValueChange = { inputtedText = it },
                         placeholder = { Text(textFieldHint) },
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (inputtedText.trim() != preInputtedText) {
+                                    onPositiveButtonClicked(inputtedText)
+                                }
+                                onDismissRequest()
+                            }
+                        )
                     )
 
                     Spacer(Spacer)
