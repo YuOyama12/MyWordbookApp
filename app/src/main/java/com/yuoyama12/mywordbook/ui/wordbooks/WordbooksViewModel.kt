@@ -19,12 +19,15 @@ class WordbooksViewModel @Inject constructor(
 ): ViewModel() {
 
     private var _wordbookAndWords by mutableStateOf(emptyList<WordbookAndWords>())
-    val wordbookAndWords: List<WordbookAndWords>
-        get() = _wordbookAndWords
+    val wordbookAndWords get() = _wordbookAndWords
+
+    private var _isWordbookEmpty by mutableStateOf(wordbookAndWords.isEmpty())
+    val isWordbookEmpty get() = _isWordbookEmpty
 
     suspend fun loadWordbookAndWords() {
         wordbookRepo.loadWordbookAndWords().collect {
             _wordbookAndWords = it
+            _isWordbookEmpty = it.isEmpty()
         }
     }
 

@@ -2,6 +2,8 @@
     <string name="app_name">My単語帳</string>
     <string name="words_screen_app_bar_header">の単語リスト</string>
     <string name="fab_add_desc">追加</string>
+    <string name="no_wordbook_items_in_list_text">単語帳が存在しません</string>
+    <string name="no_word_items_in_list_text">単語が存在しません</string>
     <string name="dialog_cancel">キャンセル</string>
     <string name="dialog_add_wordbook_title">単語帳の作成</string>
     <string name="dialog_add_wordbook_hint">単語帳の名前を入力</string>

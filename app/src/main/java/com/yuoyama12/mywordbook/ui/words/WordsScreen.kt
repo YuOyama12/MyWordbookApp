@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.components.ConfirmationDialog
+import com.yuoyama12.mywordbook.components.NoItemsNotification
 import com.yuoyama12.mywordbook.components.SimplePopupMenu
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.ui.theme.wordCardBackgroundColor
@@ -104,11 +106,25 @@ fun WordsScreen(
         Column(
             modifier = Modifier.padding(padding)
         ) {
-            WordsList(
-                viewModel = viewModel
-            )
-        }
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (viewModel.isWordsListEmpty) {
+                    NoItemsNotification(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center),
+                        image = painterResource(R.drawable.ic_no_items_in_list),
+                        message = stringResource(R.string.no_word_items_in_list_text)
+                    )
+                } else {
+                    WordsList(
+                        viewModel = viewModel
+                    )
+                }
+            }
 
+        }
     }
 }
 

@@ -21,8 +21,8 @@ class WordsViewModel @Inject constructor(
     private var _words by mutableStateOf(emptyList<Word>())
     val words get() = _words
 
-    private var _storedWordbookId: Long? = null
-    val storedWordbookId get() = _storedWordbookId
+    private var _isWordsListEmpty by mutableStateOf(words.isEmpty())
+    val isWordsListEmpty get() = _isWordsListEmpty
 
     private var _storedWordText: String? = null
     val storedWordText get () = _storedWordText
@@ -34,14 +34,12 @@ class WordsViewModel @Inject constructor(
         get() {  return Date(System.currentTimeMillis()) }
 
 
-    fun storeTextsTemporarily(wordbookId: Long, wordText: String, meaningText: String) {
-        _storedWordbookId = wordbookId
+    fun storeTextsTemporarily(wordText: String, meaningText: String) {
         _storedWordText = wordText
         _storedMeaningText = meaningText
     }
 
     fun nullifyTemporarilyStoredData() {
-        _storedWordbookId = null
         _storedWordText = null
         _storedMeaningText = null
     }
@@ -50,6 +48,7 @@ class WordsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             wordbookRepo.loadWordsBy(wordbookId).collect {
                 _words = it
+                _isWordsListEmpty = it.isEmpty()
             }
         }
 

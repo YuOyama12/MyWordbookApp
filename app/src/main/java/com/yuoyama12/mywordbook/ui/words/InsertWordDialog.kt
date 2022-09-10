@@ -66,7 +66,7 @@ fun InsertWordDialog(
                 (wordInfo.trim() != "" ||
                         meaningInfo.text.trim() != "")
             ) {
-                viewModel.storeTextsTemporarily(wordbookId, wordInfo, meaningInfo.text)
+                viewModel.storeTextsTemporarily(wordInfo, meaningInfo.text)
             }
 
 
