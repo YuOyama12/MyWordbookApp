@@ -30,4 +30,6 @@
     </string-array>
     <string name="dialog_edit_word_title">単語情報の変更</string>
     <string name="dialog_edit_word_positive_button">変更</string>
+    <string name="word_display_word_header">単語</string>
+    <string name="word_display_meaning_header">単語</string>
 </resources>

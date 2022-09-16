@@ -145,6 +145,7 @@ fun WordsList(
             val interactionSource = remember { MutableInteractionSource() }
             var expandPopupMenu by remember { mutableStateOf(false) }
 
+            var openWordDisplayDialog by rememberSaveable { mutableStateOf(false) }
             var openEditDialog by rememberSaveable { mutableStateOf(false) }
             var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -171,7 +172,7 @@ fun WordsList(
                         detectTapGestures(
                             onPress = { showRippleEffect(interactionSource, it) },
                             onLongPress = { expandPopupMenu = true },
-                            onTap = { }
+                            onTap = { openWordDisplayDialog = true }
                         )
                     }
             ) {
@@ -202,6 +203,16 @@ fun WordsList(
                             .padding(horizontal = 10.dp, vertical = 10.dp)
                     )
 
+                }
+
+                if (openWordDisplayDialog) {
+                    val wordlist = viewModel.words
+
+                    WordDetailsDialog(
+                        wordList = wordlist,
+                        defaultIndex = wordlist.indexOf(word),
+                        onDismissRequest = { openWordDisplayDialog = false }
+                    )
                 }
 
                 if (expandPopupMenu) {
