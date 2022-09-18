@@ -208,7 +208,7 @@ fun WordsList(
                 if (openWordDisplayDialog) {
                     val wordlist = viewModel.words
 
-                    WordDetailsDialog(
+                    WordDisplayDialog(
                         wordList = wordlist,
                         defaultIndex = wordlist.indexOf(word),
                         onDismissRequest = { openWordDisplayDialog = false }

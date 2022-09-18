@@ -2,22 +2,18 @@
 
 package com.yuoyama12.mywordbook.ui.words
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,6 +26,7 @@ import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.data.Word
+import com.yuoyama12.mywordbook.datastore.DataStoreManager
 import kotlinx.coroutines.launch
 
 private val textFontSize = 20.sp
@@ -37,11 +34,13 @@ private val iconButtonColor = Color.White
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun WordDetailsDialog(
+fun WordDisplayDialog(
     wordList: List<Word>,
     defaultIndex: Int = 0,
     onDismissRequest: () -> Unit
 ) {
+    val context = LocalContext.current
+    val datastoreManager = DataStoreManager(context)
     val composableScope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(initialPage = defaultIndex)
@@ -67,6 +66,7 @@ fun WordDetailsDialog(
                 count = wordList.size,
                 state = pagerState
             ) { index ->
+                val showMeaning = datastoreManager.getWhetherShowMeaning().collectAsState(initial = true)
 
                 Column(
                     modifier = Modifier
@@ -89,7 +89,24 @@ fun WordDetailsDialog(
                         )
                     }
 
-                    Header(title = stringResource(R.string.word_display_meaning_header))
+                    Box {
+                        Header(title = stringResource(R.string.word_display_meaning_header))
+
+                        Icon(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(horizontal = 12.dp)
+                                .clickable {
+                                    composableScope.launch {
+                                        datastoreManager.storeWhetherShowMeaning(!showMeaning.value)
+                                }
+                            },
+                            painter = getVisibilityIconColor(showMeaning.value),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.contentColorFor(MaterialTheme.colors.primarySurface)
+                        )
+
+                    }
 
                     SelectionContainer(
                         modifier = Modifier
@@ -99,8 +116,9 @@ fun WordDetailsDialog(
                     ) {
                         Text(
                             text = wordList[index].meaning,
+                            color = getMeaningTextColor(showMeaning.value),
                             modifier = Modifier.padding(15.dp),
-                            fontSize = textFontSize
+                            fontSize = textFontSize,
                         )
                     }
 
@@ -193,6 +211,24 @@ fun Header(
                 .align(Alignment.Center),
             color = titleColor
         )
+    }
+}
+
+@Composable
+private fun getMeaningTextColor(show: Boolean): Color {
+    return if (show) {
+        Color.Unspecified
+    } else {
+        MaterialTheme.colors.surface
+    }
+}
+
+@Composable
+private fun getVisibilityIconColor(show: Boolean): Painter {
+    return if (show) {
+        painterResource(R.drawable.ic_visibility_off)
+    } else {
+        painterResource(R.drawable.ic_visibility)
     }
 }
 
