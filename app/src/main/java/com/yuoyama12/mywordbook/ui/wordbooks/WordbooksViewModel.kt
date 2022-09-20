@@ -10,7 +10,9 @@ import com.yuoyama12.mywordbook.data.WordbookAndWords
 import com.yuoyama12.mywordbook.data.WordbookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +30,12 @@ class WordbooksViewModel @Inject constructor(
         wordbookRepo.loadWordbookAndWords().collect {
             _wordbookAndWords = it
             _isWordbookEmpty = it.isEmpty()
+        }
+    }
+
+    fun fetchWordbooksAndWords(): List<WordbookAndWords> {
+        return runBlocking {
+            wordbookRepo.loadWordbookAndWords().first()
         }
     }
 

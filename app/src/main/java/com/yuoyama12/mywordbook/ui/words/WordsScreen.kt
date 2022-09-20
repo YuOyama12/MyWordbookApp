@@ -31,9 +31,11 @@ import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.components.ConfirmationDialog
 import com.yuoyama12.mywordbook.components.NoItemsNotification
 import com.yuoyama12.mywordbook.components.SimplePopupMenu
+import com.yuoyama12.mywordbook.components.SingleSelectDialog
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.ui.theme.wordCardBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
+import com.yuoyama12.mywordbook.ui.wordbooks.WordbooksViewModel
 import com.yuoyama12.mywordbook.ui.wordbooks.showRippleEffect
 
 private val fontSize = 16.sp
@@ -66,7 +68,6 @@ fun WordsScreen(
                             text = stringResource(R.string.words_screen_app_bar_header),
                             modifier = Modifier.padding(end = 15.dp)
                         )
-
                     }
                 },
                 navigationIcon = {
@@ -147,6 +148,7 @@ fun WordsList(
 
             var openWordDisplayDialog by rememberSaveable { mutableStateOf(false) }
             var openEditDialog by rememberSaveable { mutableStateOf(false) }
+            var openSelectWordbookDialog by rememberSaveable { mutableStateOf(false) }
             var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
             Card(
@@ -182,8 +184,7 @@ fun WordsList(
                     Text(
                         text = word.word,
                         fontSize = fontSize,
-                        modifier =
-                        Modifier
+                        modifier = Modifier
                             .weight(0.4f)
                             .padding(horizontal = 10.dp, vertical = 10.dp)
                     )
@@ -226,7 +227,8 @@ fun WordsList(
                     ) { index, _ ->
                            when(index) {
                                0 -> { openEditDialog = true }
-                               1 -> { openDeleteDialog = true }
+                               1 -> { openSelectWordbookDialog = true }
+                               2 -> { openDeleteDialog = true }
                            }
                     }
                 }
@@ -240,6 +242,33 @@ fun WordsList(
                         positiveButtonText = stringResource(R.string.dialog_edit_word_positive_button),
                         onDismissRequest = { openEditDialog = false }
                     )
+                }
+
+                if (openSelectWordbookDialog) {
+                    val wordbookViewModel: WordbooksViewModel = hiltViewModel()
+                    val wordbookList = wordbookViewModel.fetchWordbooksAndWords().mapNotNull {
+                        if (it.wordbook.id != word.wordbookId) it else null
+                    }
+
+                    if (wordbookList.isEmpty()) {
+                        openSelectWordbookDialog = false
+                        Toast.makeText(
+                            context,
+                            stringResource(R.string.no_other_wordbooks_to_move_message),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        SingleSelectDialog(
+                            title = stringResource(R.string.dialog_select_other_wordbook_title),
+                            optionsList = wordbookList.map { it.wordbook.name },
+                            onDismissRequest = { openSelectWordbookDialog = false },
+                            submitButtonText = stringResource(R.string.dialog_select_other_wordbook_submit_button)
+                        ) { position ->
+                            val selectedWordbook = wordbookList[position].wordbook
+
+                            viewModel.moveWordToOtherWordbook(word, selectedWordbook)
+                        }
+                    }
                 }
 
                 if (openDeleteDialog) {

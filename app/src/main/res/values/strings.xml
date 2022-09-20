@@ -26,10 +26,14 @@
     <string name="dialog_add_word_consecutively_add_button">連続して追加</string>
     <string-array name="word_list_popup_menu">
         <item>単語情報の変更</item>
+        <item>別の単語帳へ移動</item>
         <item>削除</item>
     </string-array>
     <string name="dialog_edit_word_title">単語情報の変更</string>
     <string name="dialog_edit_word_positive_button">変更</string>
     <string name="word_display_word_header">単語</string>
     <string name="word_display_meaning_header">意味</string>
+    <string name="no_other_wordbooks_to_move_message">移動先が存在しません</string>
+    <string name="dialog_select_other_wordbook_title">移動先の選択</string>
+    <string name="dialog_select_other_wordbook_submit_button">移動</string>
 </resources>

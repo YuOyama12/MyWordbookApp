@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yuoyama12.mywordbook.data.Word
+import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.data.WordbookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +64,20 @@ class WordsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             wordbookRepo.deleteWord(word)
             updateWordbookModifiedDate(word.wordbookId)
+        }
+    }
+
+    fun moveWordToOtherWordbook(word: Word, destination: Wordbook) {
+        val wordWithNewWordbookId =
+            word.copy(
+                wordbookId = destination.id,
+                modifiedDate = currentDate
+            )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            wordbookRepo.deleteWord(word)
+            wordbookRepo.insertWord(wordWithNewWordbookId)
+            updateWordbookModifiedDate(destination.id)
         }
     }
 
