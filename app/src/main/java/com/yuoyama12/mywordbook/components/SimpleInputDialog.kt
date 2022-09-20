@@ -9,15 +9,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.yuoyama12.mywordbook.R
 
-private val Spacer = Modifier.padding(vertical = 3.dp)
-private val MessagePadding = Modifier.padding(bottom = 28.dp)
+private val spacer = Modifier.padding(vertical = 3.dp)
+private val messagePadding = Modifier.padding(bottom = 28.dp)
 
 @Composable
 fun SimpleInputDialog(
@@ -51,16 +50,16 @@ fun SimpleInputDialog(
                         style = MaterialTheme.typography.subtitle1
                     )
 
-                    Spacer(Spacer)
+                    Spacer(spacer)
 
                     if (message != "") {
                         Text(
                             text = message,
-                            modifier = MessagePadding.alpha(ContentAlpha.medium),
+                            modifier = messagePadding.alpha(ContentAlpha.medium),
                             style = MaterialTheme.typography.body2
                         )
 
-                        Spacer(Spacer)
+                        Spacer(spacer)
                     }
 
                     OutlinedTextField(
@@ -79,7 +78,7 @@ fun SimpleInputDialog(
                         )
                     )
 
-                    Spacer(Spacer)
+                    Spacer(spacer)
 
                     Row(
                         modifier = Modifier.align(Alignment.End),

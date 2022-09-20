@@ -40,7 +40,7 @@ fun WordDisplayDialog(
     onDismissRequest: () -> Unit
 ) {
     val context = LocalContext.current
-    val datastoreManager = DataStoreManager(context)
+    val dataStoreManager = DataStoreManager(context)
     val composableScope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(initialPage = defaultIndex)
@@ -66,7 +66,7 @@ fun WordDisplayDialog(
                 count = wordList.size,
                 state = pagerState
             ) { index ->
-                val showMeaning = datastoreManager.getWhetherShowMeaning().collectAsState(initial = true)
+                val showMeaning = dataStoreManager.getWhetherShowMeaning().collectAsState(initial = true)
 
                 Column(
                     modifier = Modifier
@@ -98,14 +98,13 @@ fun WordDisplayDialog(
                                 .padding(horizontal = 12.dp)
                                 .clickable {
                                     composableScope.launch {
-                                        datastoreManager.storeWhetherShowMeaning(!showMeaning.value)
+                                        dataStoreManager.storeWhetherShowMeaning(!showMeaning.value)
                                 }
                             },
-                            painter = getVisibilityIconColor(showMeaning.value),
+                            painter = getVisibilityIcon(showMeaning.value),
                             contentDescription = null,
                             tint = MaterialTheme.colors.contentColorFor(MaterialTheme.colors.primarySurface)
                         )
-
                     }
 
                     SelectionContainer(
@@ -196,7 +195,7 @@ fun WordDisplayDialog(
 @Composable
 fun Header(
     title: String,
-    titleColor: Color = MaterialTheme.colors.onPrimary,
+    titleTextColor: Color = MaterialTheme.colors.onPrimary,
     backgroundColor: Color = MaterialTheme.colors.primary
 ) {
     Box(modifier = Modifier
@@ -209,7 +208,7 @@ fun Header(
             modifier = Modifier
                 .padding(10.dp)
                 .align(Alignment.Center),
-            color = titleColor
+            color = titleTextColor
         )
     }
 }
@@ -224,7 +223,7 @@ private fun getMeaningTextColor(show: Boolean): Color {
 }
 
 @Composable
-private fun getVisibilityIconColor(show: Boolean): Painter {
+private fun getVisibilityIcon(show: Boolean): Painter {
     return if (show) {
         painterResource(R.drawable.ic_visibility_off)
     } else {

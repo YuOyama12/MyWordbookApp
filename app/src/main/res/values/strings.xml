@@ -32,6 +32,4 @@
     <string name="dialog_edit_word_positive_button">変更</string>
     <string name="word_display_word_header">単語</string>
     <string name="word_display_meaning_header">意味</string>
-    <string name="word_display_hide_button">隠す</string>
-
 </resources>
