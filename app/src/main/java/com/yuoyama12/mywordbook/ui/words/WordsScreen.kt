@@ -139,7 +139,8 @@ fun WordsList(
         modifier = modifier
     ) {
         items(
-            items = viewModel.words
+            items = viewModel.words,
+            key = { it.id }
         ) { word ->
 
             val context = LocalContext.current

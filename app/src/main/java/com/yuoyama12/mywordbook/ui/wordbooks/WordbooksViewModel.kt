@@ -20,15 +20,15 @@ class WordbooksViewModel @Inject constructor(
     private val wordbookRepo: WordbookRepository
 ): ViewModel() {
 
-    private var _wordbookAndWords by mutableStateOf(emptyList<WordbookAndWords>())
-    val wordbookAndWords get() = _wordbookAndWords
+    private var _wordbookAndWordsList by mutableStateOf(emptyList<WordbookAndWords>())
+    val wordbookAndWordsList get() = _wordbookAndWordsList
 
-    private var _isWordbookEmpty by mutableStateOf(wordbookAndWords.isEmpty())
+    private var _isWordbookEmpty by mutableStateOf(wordbookAndWordsList.isEmpty())
     val isWordbookEmpty get() = _isWordbookEmpty
 
     suspend fun loadWordbookAndWords() {
         wordbookRepo.loadWordbookAndWords().collect {
-            _wordbookAndWords = it
+            _wordbookAndWordsList = it
             _isWordbookEmpty = it.isEmpty()
         }
     }
@@ -60,7 +60,7 @@ class WordbooksViewModel @Inject constructor(
     }
 
     fun getLatestWordbookBy(wordbookId: Long): Wordbook {
-        wordbookAndWords.forEach { wordbookAndWords ->
+        wordbookAndWordsList.forEach { wordbookAndWords ->
             if (wordbookAndWords.wordbook.id == wordbookId) {
                 return wordbookAndWords.wordbook
             }

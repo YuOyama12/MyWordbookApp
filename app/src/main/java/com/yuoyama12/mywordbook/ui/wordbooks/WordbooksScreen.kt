@@ -123,7 +123,8 @@ private fun WordbookList(
         modifier = modifier
     ) {
         items(
-            items = viewModel.wordbookAndWords
+            items = viewModel.wordbookAndWordsList,
+            key = { it.wordbook.id }
         ) { wordbookAndWords ->
 
             val context = LocalContext.current
