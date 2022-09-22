@@ -8,8 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.yuoyama12.mywordbook.NavigationViewModel
+import com.yuoyama12.mywordbook.data.Word
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.ui.wordbooks.WordbooksScreen
+import com.yuoyama12.mywordbook.ui.worddetail.WordDetailScreen
 import com.yuoyama12.mywordbook.ui.words.WordsScreen
 
 //文字列に'/'が含まれていた場合、画面遷移に失敗するため
@@ -38,12 +40,29 @@ fun MyWordbookApp() {
                 }
             )
         }
-        composable(route = Screen.Words.route) {
+        composable(route = Screen.Words.route) { backStackEntry ->
             val wordbook = navViewModel.wordbook.swapSlashAndRandomString()
 
             WordsScreen(
                 wordbook = wordbook,
-                onNavigationIconClicked = { navController.popBackStack()  }
+                onWordDetailMenuClicked = { _word ->
+                    if (backStackEntry.lifecycleIsResumed()) {
+                        val word = _word.swapSlashAndRandomString()
+                        navViewModel.setWord(word)
+
+                        navController.navigate(Screen.WordDetail.createRoute(word))
+                    }
+
+                },
+                onNavigationIconClicked = { navController.popBackStack()  },
+            )
+        }
+        composable(route = Screen.WordDetail.route) {
+            val word = navViewModel.word.swapSlashAndRandomString()
+
+            WordDetailScreen(
+                word = word,
+                onNavigationIconClicked = { navController.popBackStack() }
             )
         }
     }
@@ -68,6 +87,28 @@ private fun Wordbook.swapSlashAndRandomString(): Wordbook {
         val newWordbookName = this.name.replace(RANDOM_STRING, "/")
 
         this.copy(name = newWordbookName)
+    }
+}
+
+private fun Word.swapSlashAndRandomString(): Word {
+    if (!this.toString().contains("/") &&
+        !this.toString().contains(RANDOM_STRING)
+    ) {
+        return this
+    }
+
+    return if (this.toString().contains("/")) {
+        val newWordText = this.word.replace("/", RANDOM_STRING)
+        val newMeaningText = this.meaning.replace("/", RANDOM_STRING)
+        val newMiscellaneousNoteText = this.miscellaneousNote.replace("/", RANDOM_STRING)
+
+        this.copy(word = newWordText, meaning = newMeaningText, miscellaneousNote = newMiscellaneousNoteText)
+    } else {
+        val newWordText = this.word.replace(RANDOM_STRING, "/")
+        val newMeaningText = this.meaning.replace(RANDOM_STRING, "/")
+        val newMiscellaneousNoteText = this.miscellaneousNote.replace(RANDOM_STRING, "/")
+
+        this.copy(word = newWordText, meaning = newMeaningText, miscellaneousNote = newMiscellaneousNoteText)
     }
 }
 

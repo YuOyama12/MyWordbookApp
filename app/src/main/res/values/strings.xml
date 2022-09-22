@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">My単語帳</string>
     <string name="words_screen_app_bar_header">の単語リスト</string>
+    <string name="word_detail_screen_app_bar_header">単語詳細</string>
     <string name="fab_add_desc">追加</string>
     <string name="no_wordbook_items_in_list_text">単語帳が存在しません</string>
     <string name="no_word_items_in_list_text">単語が存在しません</string>
@@ -25,6 +26,7 @@
     <string name="dialog_add_word_message">*追加にはどちらかを入力している必要があります</string>
     <string name="dialog_add_word_consecutively_add_button">連続して追加</string>
     <string-array name="word_list_popup_menu">
+        <item>単語情報の確認</item>
         <item>単語情報の変更</item>
         <item>別の単語帳へ移動</item>
         <item>削除</item>
@@ -33,6 +35,9 @@
     <string name="dialog_edit_word_positive_button">変更</string>
     <string name="word_display_word_header">単語</string>
     <string name="word_display_meaning_header">意味</string>
+    <string name="word_detail_miscellaneous_note_header">メモ(例文など)</string>
+    <string name="word_detail_miscellaneous_note_confirm_button">確定</string>
+    <string name="word_detail_miscellaneous_note_edit_button">編集</string>
     <string name="no_other_wordbooks_to_move_message">移動先が存在しません</string>
     <string name="dialog_select_other_wordbook_title">移動先の選択</string>
     <string name="dialog_select_other_wordbook_submit_button">移動</string>

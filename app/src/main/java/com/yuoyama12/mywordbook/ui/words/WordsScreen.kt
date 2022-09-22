@@ -32,6 +32,7 @@ import com.yuoyama12.mywordbook.components.ConfirmationDialog
 import com.yuoyama12.mywordbook.components.NoItemsNotification
 import com.yuoyama12.mywordbook.components.SimplePopupMenu
 import com.yuoyama12.mywordbook.components.SingleSelectDialog
+import com.yuoyama12.mywordbook.data.Word
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.ui.theme.wordCardBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
@@ -44,7 +45,8 @@ private val cardMinHeight = 85.dp
 @Composable
 fun WordsScreen(
     wordbook: Wordbook,
-    onNavigationIconClicked: () -> Unit = {}
+    onWordDetailMenuClicked: (Word) -> Unit,
+    onNavigationIconClicked: () -> Unit
 ) {
     val viewModel: WordsViewModel = hiltViewModel()
 
@@ -120,7 +122,8 @@ fun WordsScreen(
                     )
                 } else {
                     WordsList(
-                        viewModel = viewModel
+                        viewModel = viewModel,
+                        onWordDetailMenuClicked = onWordDetailMenuClicked
                     )
                 }
             }
@@ -133,7 +136,8 @@ fun WordsScreen(
 @Composable
 fun WordsList(
     modifier: Modifier = Modifier,
-    viewModel: WordsViewModel
+    viewModel: WordsViewModel,
+    onWordDetailMenuClicked: (Word) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -227,9 +231,10 @@ fun WordsList(
                         onDismissRequest = { expandPopupMenu = false }
                     ) { index, _ ->
                            when(index) {
-                               0 -> { openEditDialog = true }
-                               1 -> { openSelectWordbookDialog = true }
-                               2 -> { openDeleteDialog = true }
+                               0 -> { onWordDetailMenuClicked(word) }
+                               1 -> { openEditDialog = true }
+                               2 -> { openSelectWordbookDialog = true }
+                               3 -> { openDeleteDialog = true }
                            }
                     }
                 }
