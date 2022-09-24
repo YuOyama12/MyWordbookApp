@@ -3,6 +3,7 @@
     <string name="words_screen_app_bar_header">の単語リスト</string>
     <string name="word_detail_screen_app_bar_header">単語詳細</string>
     <string name="fab_add_desc">追加</string>
+    <string name="option_menu_word_tags_title">単語追加時のタグを編集</string>
     <string name="no_wordbook_items_in_list_text">単語帳が存在しません</string>
     <string name="no_word_items_in_list_text">単語が存在しません</string>
     <string name="dialog_cancel">キャンセル</string>

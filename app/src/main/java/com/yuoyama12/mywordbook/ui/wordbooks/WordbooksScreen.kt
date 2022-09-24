@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -50,6 +51,8 @@ fun WordbooksScreen(
         viewModel.loadWordbookAndWords()
     }
 
+    var openOptionMenu by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -59,6 +62,27 @@ fun WordbooksScreen(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                },
+                actions = {
+                    IconButton(
+                        onClick = { openOptionMenu = !openOptionMenu }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = null
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = openOptionMenu,
+                        onDismissRequest = { openOptionMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            onClick = { openOptionMenu = false }
+                        ) {
+                            Text(text = stringResource(R.string.option_menu_word_tags_title))
+                        }
+                    }
                 }
             )
         },
