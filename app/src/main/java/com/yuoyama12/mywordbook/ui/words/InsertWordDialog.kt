@@ -105,7 +105,7 @@ fun InsertWordDialog(
                         modifier = Modifier.fillMaxWidth(),
                         value = wordInfo,
                         onValueChange = { wordInfo = it },
-                        label = { Text("単語") },
+                        label = { Text(stringResource(R.string.dialog_add_word_label_word)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                         keyboardActions = KeyboardActions(
@@ -124,7 +124,9 @@ fun InsertWordDialog(
                             .background(shape = CircleShape, color = MaterialTheme.colors.surface)
                             .border(width = 0.8.dp, color = Color.Gray, shape = CircleShape)
                     ) {
+                        //TODO:後程、EditTagsDialog(34行目)のタグリストと共に、dataStoreより引き出す処理を実装
                         val tags = listOf("[名]", "[動]", "[形]", "[副]", "[前]", "[助動]")
+
                         LazyRowToSelectTag(
                             tags = tags,
                         ) { tag ->
@@ -140,7 +142,6 @@ fun InsertWordDialog(
 
                                 meaningText = textWithTag
                             }
-
                         }
                     }
 
@@ -163,7 +164,7 @@ fun InsertWordDialog(
                             meaningInfo = it
                             meaningText = it.text
                         },
-                        label = { Text("意味") }
+                        label = { Text(stringResource(R.string.dialog_add_word_label_meaning)) }
                     )
 
                     Row(
@@ -223,9 +224,7 @@ fun InsertWordDialog(
 
                             onDismissRequest()
                         }
-
                     }
-
                 }
             }
         }
@@ -252,7 +251,6 @@ private fun LazyRowToSelectTag(
                 Text(tag)
             }
         }
-
     }
 }
 

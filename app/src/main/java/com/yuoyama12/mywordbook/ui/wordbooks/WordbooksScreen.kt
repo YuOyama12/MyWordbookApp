@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -37,6 +36,7 @@ import com.yuoyama12.mywordbook.components.NoItemsNotification
 import com.yuoyama12.mywordbook.components.SimpleInputDialog
 import com.yuoyama12.mywordbook.components.SimplePopupMenu
 import com.yuoyama12.mywordbook.data.Wordbook
+import com.yuoyama12.mywordbook.menu.MultiOptionMenu
 import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
 
@@ -64,25 +64,11 @@ fun WordbooksScreen(
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = { openOptionMenu = !openOptionMenu }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = null
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = openOptionMenu,
+                    MultiOptionMenu(
+                        expand = openOptionMenu,
+                        iconClicked = { openOptionMenu = !openOptionMenu },
                         onDismissRequest = { openOptionMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            onClick = { openOptionMenu = false }
-                        ) {
-                            Text(text = stringResource(R.string.option_menu_word_tags_title))
-                        }
-                    }
+                    )
                 }
             )
         },

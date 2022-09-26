@@ -4,6 +4,7 @@
     <string name="word_detail_screen_app_bar_header">単語詳細</string>
     <string name="fab_add_desc">追加</string>
     <string name="option_menu_word_tags_title">単語追加時のタグを編集</string>
+    <string name="dialog_edit_word_tags_title">タグの編集</string>
     <string name="no_wordbook_items_in_list_text">単語帳が存在しません</string>
     <string name="no_word_items_in_list_text">単語が存在しません</string>
     <string name="dialog_cancel">キャンセル</string>
@@ -24,6 +25,8 @@
     <string name="dialog_delete_confirmation_positive_button">削除</string>
     <string name="delete_complete_message">削除しました</string>
     <string name="dialog_add_word_title">単語情報の入力</string>
+    <string name="dialog_add_word_label_word">単語</string>
+    <string name="dialog_add_word_label_meaning">意味</string>
     <string name="dialog_add_word_message">*追加にはどちらかを入力している必要があります</string>
     <string name="dialog_add_word_consecutively_add_button">連続して追加</string>
     <string-array name="word_list_popup_menu">
