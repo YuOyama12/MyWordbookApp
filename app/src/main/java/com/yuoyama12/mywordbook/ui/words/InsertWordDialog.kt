@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -28,6 +29,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.data.Word
+import com.yuoyama12.mywordbook.datastore.DataStoreManager
+import kotlinx.coroutines.runBlocking
 
 private val Spacer = Modifier.padding(vertical = 4.dp)
 
@@ -42,9 +45,10 @@ fun InsertWordDialog(
     onDismissRequest: () -> Unit
 ) {
     val viewModel: WordsViewModel = hiltViewModel()
+    val context = LocalContext.current
+    val dataStoreManager = DataStoreManager(context)
 
     if (word != null) viewModel.nullifyTemporarilyStoredData()
-
 
     val preInputtedWord = word?.word ?: viewModel.storedWordText ?: ""
     val preInputtedMeaning = word?.meaning ?: viewModel.storedMeaningText ?: ""
@@ -118,19 +122,16 @@ fun InsertWordDialog(
                     Spacer(Spacer)
 
                     Box(
-                        modifier =
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .background(shape = CircleShape, color = MaterialTheme.colors.surface)
                             .border(width = 0.8.dp, color = Color.Gray, shape = CircleShape)
                     ) {
-                        //TODO:後程、EditTagsDialog(34行目)のタグリストと共に、dataStoreより引き出す処理を実装
-                        val tags = listOf("[名]", "[動]", "[形]", "[副]", "[前]", "[助動]")
+                        val tags = runBlocking { dataStoreManager.getWordTags() }
 
                         LazyRowToSelectTag(
                             tags = tags,
                         ) { tag ->
-
                             insertTagTextAfterCursor(
                                 tag,
                                 meaningInfo

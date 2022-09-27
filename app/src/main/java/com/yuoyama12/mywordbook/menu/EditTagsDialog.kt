@@ -14,11 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.yuoyama12.mywordbook.components.SimpleFlowRow
+import com.yuoyama12.mywordbook.datastore.DataStoreManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val spacer = Modifier.padding(vertical = 4.dp)
 
@@ -28,10 +33,15 @@ fun EditTagsDialog(
     message: String? = null,
     onDismissRequest: () -> Unit
 ) {
+    val context = LocalContext.current
+    val dataStoreManager = DataStoreManager(context)
+    val composableScope = rememberCoroutineScope()
+
     var tagText by rememberSaveable { mutableStateOf("") }
 
-    //TODO: 後程、InsertWordDialog(128行目)のタグリストと共に、dataStoreより引き出す処理を実装
-    val tagsList  = mutableListOf("[名]", "[動]", "[形]", "[副]", "[前]", "[助動]")
+    val tagsList by remember {
+        mutableStateOf( runBlocking { dataStoreManager.getWordTags() } )
+    }
 
     Dialog(
         onDismissRequest = { onDismissRequest() }
@@ -80,7 +90,13 @@ fun EditTagsDialog(
 
                         Button(
                             onClick = {
-                                //TODO: 追加処理と保存処理を入れる
+                                if (tagText == "") return@Button
+
+                                tagsList.add(tagText)
+                                composableScope.launch(Dispatchers.IO) {
+                                    dataStoreManager.storeWordTags(tagsList)
+                                }
+                                tagText = ""
                             }
                         ) {
                             Icon(
@@ -109,7 +125,10 @@ fun EditTagsDialog(
                                     tag = tag,
                                     onClearClicked = {
                                         tagsList.remove(it)
-                                        //TODO: 削除処理と保存処理を入れる
+
+                                        composableScope.launch(Dispatchers.IO) {
+                                            dataStoreManager.storeWordTags(tagsList)
+                                        }
                                     }
                                 )
                             }
@@ -122,10 +141,7 @@ fun EditTagsDialog(
                             .align(Alignment.End),
                     ) {
                         TextButton(
-                            onClick = {
-                                //TODO: 追加処理と保存処理を入れる
-                                onDismissRequest()
-                            }
+                            onClick = { onDismissRequest() }
                         ) {
                             Text(stringResource(android.R.string.ok))
                         }
