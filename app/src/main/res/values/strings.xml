@@ -7,10 +7,18 @@
     <string name="dialog_edit_word_tags_title">タグの編集</string>
     <string name="no_wordbook_items_in_list_text">単語帳が存在しません</string>
     <string name="no_word_items_in_list_text">単語が存在しません</string>
+    <string name="sorting_selection_header">並べ替え:</string>
+    <string name="sorting_selection_field_created_date">作成日</string>
+    <string name="sorting_selection_field_modified_date">更新日</string>
+    <string name="sorting_selection_field_name">名前</string>
+    <string name="sorting_selection_asc_button_text">昇順</string>
+    <string name="sorting_selection_desc_button_text">降順</string>
+    <string name="dialog_sorting_selection_title">並べ替え</string>
+    <string name="dialog_sorting_selection_submit_button">適用</string>
     <string name="dialog_cancel">キャンセル</string>
     <string name="dialog_add_wordbook_title">単語帳の作成</string>
     <string name="dialog_add_wordbook_hint">単語帳の名前を入力</string>
-    <string name="dialog_add_workbook_positive_button">追加</string>
+    <string name="dialog_add_wordbook_positive_button">追加</string>
     <string-array name="wordbook_list_popup_menu">
         <item>名前の変更</item>
         <item>削除</item>

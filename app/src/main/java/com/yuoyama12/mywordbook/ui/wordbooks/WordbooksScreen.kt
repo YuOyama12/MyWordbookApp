@@ -31,10 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
-import com.yuoyama12.mywordbook.components.ConfirmationDialog
-import com.yuoyama12.mywordbook.components.NoItemsNotification
-import com.yuoyama12.mywordbook.components.SimpleInputDialog
-import com.yuoyama12.mywordbook.components.SimplePopupMenu
+import com.yuoyama12.mywordbook.Sorting
+import com.yuoyama12.mywordbook.components.*
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.menu.MultiOptionMenu
 import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
@@ -87,7 +85,7 @@ fun WordbooksScreen(
                     SimpleInputDialog(
                         title = stringResource(R.string.dialog_add_wordbook_title),
                         textFieldHint = stringResource(R.string.dialog_add_wordbook_hint),
-                        positiveButtonText = stringResource(R.string.dialog_add_workbook_positive_button),
+                        positiveButtonText = stringResource(R.string.dialog_add_wordbook_positive_button),
                         onDismissRequest = { openAddDialog = false }
                     ) { name ->
                         viewModel.addNewWordbook(name)
@@ -100,6 +98,14 @@ fun WordbooksScreen(
         Column(
             modifier = Modifier.padding(padding)
         ) {
+            SortingSelectionFields(
+                sortingList = Sorting.values(),
+                defaultSorting = Sorting.CreatedDate,
+                defaultIsDescOrder = false,
+                onOrderButtonClicked = {  },
+                onSortingApplyClicked = {  }
+            )
+
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
