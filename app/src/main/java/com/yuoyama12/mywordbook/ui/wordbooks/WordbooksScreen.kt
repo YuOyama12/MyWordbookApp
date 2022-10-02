@@ -34,9 +34,13 @@ import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.Sorting
 import com.yuoyama12.mywordbook.components.*
 import com.yuoyama12.mywordbook.data.Wordbook
+import com.yuoyama12.mywordbook.datastore.DataStoreManager
 import com.yuoyama12.mywordbook.menu.MultiOptionMenu
 import com.yuoyama12.mywordbook.ui.theme.wordbookBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val wordbookNameFontSize = 30.sp
 
@@ -45,6 +49,10 @@ fun WordbooksScreen(
     viewModel: WordbooksViewModel = hiltViewModel(),
     onWordbookClicked: (Wordbook) -> Unit
 ) {
+    val context = LocalContext.current
+    val dataStoreManager = DataStoreManager(context)
+    val composableScope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         viewModel.loadWordbookAndWords()
     }
@@ -100,10 +108,22 @@ fun WordbooksScreen(
         ) {
             SortingSelectionFields(
                 sortingList = Sorting.values(),
-                defaultSorting = Sorting.CreatedDate,
-                defaultIsDescOrder = false,
-                onOrderButtonClicked = {  },
-                onSortingApplyClicked = {  }
+                defaultSorting = runBlocking {
+                    Sorting.valueOf(viewModel.wordbookSortingFlow.first())
+                },
+                defaultIsDescOrder = runBlocking {
+                    viewModel.wordbookSortingOrderFlow.first()
+                },
+                onOrderButtonClicked = { isDescOrder ->
+                    composableScope.launch {
+                      dataStoreManager.storeWordbookSortingOrder(isDescOrder)
+                    }
+                },
+                onSortingApplyClicked = { sorting ->
+                    composableScope.launch {
+                        dataStoreManager.storeWordbookSorting(sorting)
+                    }
+                }
             )
 
             Box(

@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.yuoyama12.mywordbook.Sorting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -22,6 +23,8 @@ class DataStoreManager(private val context: Context) {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(DATASTORE_NAME)
         val SHOW_MEANING = booleanPreferencesKey("showMeaning")
         val WORD_TAGS = stringPreferencesKey("wordTags")
+        val WORDBOOK_SORTING = stringPreferencesKey("wordbookSorting")
+        val WORDBOOK_SORTING_ORDER = booleanPreferencesKey("wordbookSortingOrder")
     }
 
     fun getWhetherShowMeaning(): Flow<Boolean> =
@@ -51,6 +54,30 @@ class DataStoreManager(private val context: Context) {
 
         context.dataStore.edit { mutablePreferences ->
             mutablePreferences[WORD_TAGS] = wordTagsStr
+        }
+    }
+
+    fun getWordbookSortingFlow(): Flow<String> {
+        return context.dataStore.data.map { preferences ->
+            preferences[WORDBOOK_SORTING] ?: Sorting.CreatedDate.toString()
+        }
+    }
+
+    suspend fun storeWordbookSorting(sorting: Enum<Sorting>) {
+        context.dataStore.edit { preferences ->
+            preferences[WORDBOOK_SORTING] = sorting.toString()
+        }
+    }
+
+    fun getWordbookSortingOrder(): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[WORDBOOK_SORTING_ORDER] ?: false
+        }
+    }
+
+    suspend fun storeWordbookSortingOrder(isDescOrder: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[WORDBOOK_SORTING_ORDER] = isDescOrder
         }
     }
 
