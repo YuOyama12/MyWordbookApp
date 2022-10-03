@@ -10,7 +10,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.yuoyama12.mywordbook.Sorting
+import com.yuoyama12.mywordbook.WordSorting
+import com.yuoyama12.mywordbook.WordbookSorting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -25,6 +26,8 @@ class DataStoreManager(private val context: Context) {
         val WORD_TAGS = stringPreferencesKey("wordTags")
         val WORDBOOK_SORTING = stringPreferencesKey("wordbookSorting")
         val WORDBOOK_SORTING_ORDER = booleanPreferencesKey("wordbookSortingOrder")
+        val WORD_SORTING = stringPreferencesKey("wordSorting")
+        val WORD_SORTING_ORDER = booleanPreferencesKey("wordSortingOrder")
     }
 
     fun getWhetherShowMeaning(): Flow<Boolean> =
@@ -59,11 +62,11 @@ class DataStoreManager(private val context: Context) {
 
     fun getWordbookSortingFlow(): Flow<String> {
         return context.dataStore.data.map { preferences ->
-            preferences[WORDBOOK_SORTING] ?: Sorting.CreatedDate.toString()
+            preferences[WORDBOOK_SORTING] ?: WordbookSorting.CreatedDate.toString()
         }
     }
 
-    suspend fun storeWordbookSorting(sorting: Enum<Sorting>) {
+    suspend fun storeWordbookSorting(sorting: Enum<WordbookSorting>) {
         context.dataStore.edit { preferences ->
             preferences[WORDBOOK_SORTING] = sorting.toString()
         }
@@ -78,6 +81,30 @@ class DataStoreManager(private val context: Context) {
     suspend fun storeWordbookSortingOrder(isDescOrder: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[WORDBOOK_SORTING_ORDER] = isDescOrder
+        }
+    }
+
+    fun getWordSortingFlow(): Flow<String> {
+        return context.dataStore.data.map { preferences ->
+            preferences[WORD_SORTING] ?: WordSorting.CreatedDate.toString()
+        }
+    }
+
+    suspend fun storeWordSorting(sorting: Enum<WordSorting>) {
+        context.dataStore.edit { preferences ->
+            preferences[WORD_SORTING] = sorting.toString()
+        }
+    }
+
+    fun getWordSortingOrder(): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[WORD_SORTING_ORDER] ?: false
+        }
+    }
+
+    suspend fun storeWordSortingOrder(isDescOrder: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[WORD_SORTING_ORDER] = isDescOrder
         }
     }
 

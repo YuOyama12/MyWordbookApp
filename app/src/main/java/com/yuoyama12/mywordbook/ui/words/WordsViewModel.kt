@@ -5,19 +5,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yuoyama12.mywordbook.WordSorting
 import com.yuoyama12.mywordbook.data.Word
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.data.WordbookRepository
+import com.yuoyama12.mywordbook.datastore.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class WordsViewModel @Inject constructor(
-    private val wordbookRepo: WordbookRepository
+    private val wordbookRepo: WordbookRepository,
+    dataStoreManager: DataStoreManager
 ) : ViewModel() {
+
+    val wordSortingFlow = dataStoreManager.getWordSortingFlow()
+    val wordSortingOrderFlow = dataStoreManager.getWordSortingOrder()
 
     private var _words by mutableStateOf(emptyList<Word>())
     val words get() = _words
@@ -45,13 +55,19 @@ class WordsViewModel @Inject constructor(
         _storedMeaningText = null
     }
 
-    fun loadWordsBy(wordbookId: Long) =
-        viewModelScope.launch(Dispatchers.IO) {
-            wordbookRepo.loadWordsBy(wordbookId).collect {
-                _words = it
-                _isWordsListEmpty = it.isEmpty()
-            }
+    suspend fun loadWordsBy(wordbookId: Long) {
+        wordSortingFlow.flatMapLatest {
+            wordbookRepo.loadWordsBy(wordbookId)
+        }.collect { list ->
+                _words = list.sortBy(
+                    wordSortingFlow.first(),
+                    wordSortingOrderFlow.first()
+                )
+                _isWordsListEmpty = list.isEmpty()
         }
+
+    }
+
 
     fun insertWord(word: Word) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -84,4 +100,19 @@ class WordsViewModel @Inject constructor(
    private suspend fun updateWordbookModifiedDate(wordbookId: Long) {
        wordbookRepo.updateWordbookModifiedDate(wordbookId, currentDate)
     }
+}
+
+private fun List<Word>.sortBy(
+    sortName: String,
+    isReversed: Boolean
+): List<Word> {
+    val sortedList = when(WordSorting.valueOf(sortName)) {
+        WordSorting.CreatedDate -> this.sortedBy { it.id }
+        WordSorting.ModifiedDate -> this.sortedBy { it.modifiedDate }
+        WordSorting.Word -> this.sortedBy { it.word }
+        WordSorting.Meaning -> this.sortedBy { it.meaning }
+    }
+
+    return if (isReversed) sortedList.reversed()
+    else  sortedList
 }

@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
-import com.yuoyama12.mywordbook.Sorting
+import com.yuoyama12.mywordbook.WordbookSorting
 import com.yuoyama12.mywordbook.components.*
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.datastore.DataStoreManager
@@ -107,9 +107,9 @@ fun WordbooksScreen(
             modifier = Modifier.padding(padding)
         ) {
             SortingSelectionFields(
-                sortingList = Sorting.values(),
+                sortingList = WordbookSorting.values(),
                 defaultSorting = runBlocking {
-                    Sorting.valueOf(viewModel.wordbookSortingFlow.first())
+                    WordbookSorting.valueOf(viewModel.wordbookSortingFlow.first())
                 },
                 defaultIsDescOrder = runBlocking {
                     viewModel.wordbookSortingOrderFlow.first()
@@ -119,9 +119,9 @@ fun WordbooksScreen(
                       dataStoreManager.storeWordbookSortingOrder(isDescOrder)
                     }
                 },
-                onSortingApplyClicked = { sorting ->
+                onSortingApplyClicked = { wordbookSorting ->
                     composableScope.launch {
-                        dataStoreManager.storeWordbookSorting(sorting)
+                        dataStoreManager.storeWordbookSorting(wordbookSorting)
                     }
                 }
             )

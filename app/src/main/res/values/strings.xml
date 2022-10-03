@@ -11,6 +11,8 @@
     <string name="sorting_selection_field_created_date">作成日</string>
     <string name="sorting_selection_field_modified_date">更新日</string>
     <string name="sorting_selection_field_name">名前</string>
+    <string name="sorting_selection_field_word">単語</string>
+    <string name="sorting_selection_field_meaning">意味</string>
     <string name="sorting_selection_asc_button_text">昇順</string>
     <string name="sorting_selection_desc_button_text">降順</string>
     <string name="dialog_sorting_selection_title">並べ替え</string>

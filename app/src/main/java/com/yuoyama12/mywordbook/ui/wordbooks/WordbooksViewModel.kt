@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yuoyama12.mywordbook.Sorting
+import com.yuoyama12.mywordbook.WordbookSorting
 import com.yuoyama12.mywordbook.data.Wordbook
 import com.yuoyama12.mywordbook.data.WordbookAndWords
 import com.yuoyama12.mywordbook.data.WordbookRepository
@@ -88,10 +88,10 @@ private fun List<WordbookAndWords>.sortBy(
     sortName: String,
     isReversed: Boolean
 ): List<WordbookAndWords> {
-    val sortedList = when(Sorting.valueOf(sortName)) {
-        Sorting.CreatedDate -> this.sortedBy { it.wordbook.id }
-        Sorting.ModifiedDate -> this.sortedBy { it.wordbook.modifiedDate }
-        Sorting.Name -> this.sortedBy { it.wordbook.name }
+    val sortedList = when(WordbookSorting.valueOf(sortName)) {
+        WordbookSorting.CreatedDate -> this.sortedBy { it.wordbook.id }
+        WordbookSorting.ModifiedDate -> this.sortedBy { it.wordbook.modifiedDate }
+        WordbookSorting.Name -> this.sortedBy { it.wordbook.name }
     }
 
     return if (isReversed) sortedList.reversed()

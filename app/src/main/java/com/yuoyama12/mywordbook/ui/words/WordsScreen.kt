@@ -28,16 +28,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
-import com.yuoyama12.mywordbook.components.ConfirmationDialog
-import com.yuoyama12.mywordbook.components.NoItemsNotification
-import com.yuoyama12.mywordbook.components.SimplePopupMenu
-import com.yuoyama12.mywordbook.components.SingleSelectDialog
+import com.yuoyama12.mywordbook.WordSorting
+import com.yuoyama12.mywordbook.WordbookSorting
+import com.yuoyama12.mywordbook.components.*
 import com.yuoyama12.mywordbook.data.Word
 import com.yuoyama12.mywordbook.data.Wordbook
+import com.yuoyama12.mywordbook.datastore.DataStoreManager
 import com.yuoyama12.mywordbook.ui.theme.wordCardBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
 import com.yuoyama12.mywordbook.ui.wordbooks.WordbooksViewModel
 import com.yuoyama12.mywordbook.ui.wordbooks.showRippleEffect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 private val fontSize = 16.sp
 private val cardMinHeight = 85.dp
@@ -49,6 +52,9 @@ fun WordsScreen(
     onNavigationIconClicked: () -> Unit
 ) {
     val viewModel: WordsViewModel = hiltViewModel()
+    val context = LocalContext.current
+    val dataStoreManager = DataStoreManager(context)
+    val composableScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.loadWordsBy(wordbook.id)
@@ -109,6 +115,26 @@ fun WordsScreen(
         Column(
             modifier = Modifier.padding(padding)
         ) {
+            SortingSelectionFields(
+                sortingList = WordSorting.values(),
+                defaultSorting = runBlocking {
+                    WordSorting.valueOf(viewModel.wordSortingFlow.first())
+                },
+                defaultIsDescOrder = runBlocking {
+                    viewModel.wordSortingOrderFlow.first()
+                },
+                onOrderButtonClicked = { isDescOrder ->
+                    composableScope.launch {
+                        dataStoreManager.storeWordSortingOrder(isDescOrder)
+                    }
+                },
+                onSortingApplyClicked = { wordSorting ->
+                    composableScope.launch {
+                        dataStoreManager.storeWordSorting(wordSorting)
+                    }
+                }
+            )
+
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
