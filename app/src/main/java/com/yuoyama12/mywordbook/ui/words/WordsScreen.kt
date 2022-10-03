@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.WordSorting
-import com.yuoyama12.mywordbook.WordbookSorting
 import com.yuoyama12.mywordbook.components.*
 import com.yuoyama12.mywordbook.data.Word
 import com.yuoyama12.mywordbook.data.Wordbook
@@ -102,7 +101,6 @@ fun WordsScreen(
                 if (openAddDialog) {
                     InsertWordDialog(
                         title = stringResource(R.string.dialog_add_word_title),
-                        message = stringResource(R.string.dialog_add_word_message),
                         wordbookId = wordbook.id,
                         positiveButtonText = stringResource(R.string.dialog_add_wordbook_positive_button),
                         onDismissRequest = { openAddDialog = false }

@@ -85,7 +85,7 @@ fun InsertWordDialog(
         ) {
             Box(
                 modifier = Modifier.padding(
-                    vertical = 16.dp,
+                    vertical = 8.dp,
                     horizontal = 16.dp
                 ),
                 contentAlignment = Alignment.Center
@@ -149,7 +149,7 @@ fun InsertWordDialog(
                     OutlinedTextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(0.65f)
+                            .fillMaxHeight(0.5f)
                             .onFocusChanged {
                                 if (!it.hasFocus) {
                                     val text = meaningInfo.text

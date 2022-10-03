@@ -3,6 +3,7 @@ package com.yuoyama12.mywordbook.menu
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -85,7 +86,16 @@ fun EditTagsDialog(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight(),
-                            singleLine = true
+                            singleLine = true,
+                            keyboardActions = KeyboardActions {
+                                if (tagText == "") return@KeyboardActions
+
+                                tagsList.add(tagText)
+                                composableScope.launch(Dispatchers.IO) {
+                                    dataStoreManager.storeWordTags(tagsList)
+                                }
+                                tagText = ""
+                            }
                         )
 
                         Button(
