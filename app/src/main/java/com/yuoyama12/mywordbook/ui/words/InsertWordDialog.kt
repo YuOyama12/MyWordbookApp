@@ -206,7 +206,8 @@ fun InsertWordDialog(
                             Text(stringResource(R.string.dialog_cancel))
                         }
 
-                        AddButton(buttonText = positiveButtonText,
+                        AddButton(
+                            buttonText = positiveButtonText,
                             wordInfo = wordInfo,
                             meaningInfo = meaningInfo.text,
                             word = word,

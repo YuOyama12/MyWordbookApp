@@ -44,7 +44,6 @@ class WordsViewModel @Inject constructor(
     val currentDate: Date
         get() {  return Date(System.currentTimeMillis()) }
 
-
     fun storeTextsTemporarily(wordText: String, meaningText: String) {
         _storedWordText = wordText
         _storedMeaningText = meaningText
@@ -65,9 +64,7 @@ class WordsViewModel @Inject constructor(
                 )
                 _isWordsListEmpty = list.isEmpty()
         }
-
     }
-
 
     fun insertWord(word: Word) {
         viewModelScope.launch(Dispatchers.IO) {
