@@ -23,6 +23,7 @@ class DataStoreManager(private val context: Context) {
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(DATASTORE_NAME)
         val SHOW_MEANING = booleanPreferencesKey("showMeaning")
+        val SHOW_SORTING_SELECTION_FIELDS = booleanPreferencesKey("showSortingSelectionFields")
         val WORD_TAGS = stringPreferencesKey("wordTags")
         val WORDBOOK_SORTING = stringPreferencesKey("wordbookSorting")
         val WORDBOOK_SORTING_ORDER = booleanPreferencesKey("wordbookSortingOrder")
@@ -38,6 +39,17 @@ class DataStoreManager(private val context: Context) {
     suspend fun storeWhetherShowMeaning(bool: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[SHOW_MEANING] = bool
+        }
+    }
+
+    fun getWhetherShowSortingSelectionFields(): Flow<Boolean> =
+        context.dataStore.data.map { preferences ->
+            preferences[SHOW_SORTING_SELECTION_FIELDS] ?: true
+        }
+
+    suspend fun storeWhetherShowSortingSelectionFields(bool: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[SHOW_SORTING_SELECTION_FIELDS] = bool
         }
     }
 

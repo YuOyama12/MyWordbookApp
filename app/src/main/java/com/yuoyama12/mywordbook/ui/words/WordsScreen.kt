@@ -26,6 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.WordSorting
@@ -37,6 +39,7 @@ import com.yuoyama12.mywordbook.ui.theme.wordCardBackgroundColor
 import com.yuoyama12.mywordbook.ui.theme.wordbookBorderColor
 import com.yuoyama12.mywordbook.ui.wordbooks.WordbooksViewModel
 import com.yuoyama12.mywordbook.ui.wordbooks.showRippleEffect
+import com.yuoyama12.mywordbook.ui.wordbooks.visibilityToggleButtonFromEndOfParent
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -110,10 +113,65 @@ fun WordsScreen(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier.padding(padding)
+        ConstraintLayout(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
         ) {
+            var isSortingFieldsVisible by remember {
+                mutableStateOf(
+                    runBlocking { dataStoreManager.getWhetherShowSortingSelectionFields().first() }
+                )
+            }
+
+            val (list, toggleButton, sortingFields) = createRefs()
+
+            Box(
+                modifier = Modifier.constrainAs(list) {
+                    if (isSortingFieldsVisible) {
+                        top.linkTo(sortingFields.bottom)
+                    } else {
+                        top.linkTo(toggleButton.top)
+                    }
+
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
+                }
+            ) {
+                if (viewModel.isWordsListEmpty) {
+                    NoItemsNotification(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.Center),
+                        image = painterResource(R.drawable.ic_no_items_in_list),
+                        message = stringResource(R.string.no_word_items_in_list_text)
+                    )
+                } else {
+                    WordsList(
+                        viewModel = viewModel,
+                        onWordDetailMenuClicked = onWordDetailMenuClicked
+                    )
+                }
+            }
+
+            VisibilityToggleButton(
+                modifier = Modifier.constrainAs(toggleButton) {
+                    top.linkTo(sortingFields.bottom)
+                    end.linkTo(parent.end, visibilityToggleButtonFromEndOfParent)
+                },
+                isVisibilityOn = isSortingFieldsVisible,
+                onClick = {
+                    isSortingFieldsVisible = !isSortingFieldsVisible
+
+                    composableScope.launch {
+                        dataStoreManager.storeWhetherShowSortingSelectionFields(isSortingFieldsVisible)
+                    }
+                }
+            )
+
             SortingSelectionFields(
+                modifier = Modifier.constrainAs(sortingFields){},
+                isVisible = isSortingFieldsVisible,
                 sortingList = WordSorting.values(),
                 defaultSorting = runBlocking {
                     WordSorting.valueOf(viewModel.wordSortingFlow.first())
@@ -132,25 +190,6 @@ fun WordsScreen(
                     }
                 }
             )
-
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                if (viewModel.isWordsListEmpty) {
-                    NoItemsNotification(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.Center),
-                        image = painterResource(R.drawable.ic_no_items_in_list),
-                        message = stringResource(R.string.no_word_items_in_list_text)
-                    )
-                } else {
-                    WordsList(
-                        viewModel = viewModel,
-                        onWordDetailMenuClicked = onWordDetailMenuClicked
-                    )
-                }
-            }
 
         }
     }

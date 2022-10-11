@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
 import com.yuoyama12.mywordbook.WordbookSorting
@@ -43,6 +45,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 private val wordbookNameFontSize = 30.sp
+val visibilityToggleButtonFromEndOfParent = 8.dp
 
 @Composable
 fun WordbooksScreen(
@@ -57,7 +60,7 @@ fun WordbooksScreen(
         viewModel.loadWordbookAndWords()
     }
 
-    var openOptionMenu by remember { mutableStateOf(false) }
+    var openOptionMenu by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -103,31 +106,30 @@ fun WordbooksScreen(
             }
         }
     ) { padding ->
-        Column(
-            modifier = Modifier.padding(padding)
+        ConstraintLayout(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
         ) {
-            SortingSelectionFields(
-                sortingList = WordbookSorting.values(),
-                defaultSorting = runBlocking {
-                    WordbookSorting.valueOf(viewModel.wordbookSortingFlow.first())
-                },
-                defaultIsDescOrder = runBlocking {
-                    viewModel.wordbookSortingOrderFlow.first()
-                },
-                onOrderButtonClicked = { isDescOrder ->
-                    composableScope.launch {
-                      dataStoreManager.storeWordbookSortingOrder(isDescOrder)
-                    }
-                },
-                onSortingApplyClicked = { wordbookSorting ->
-                    composableScope.launch {
-                        dataStoreManager.storeWordbookSorting(wordbookSorting)
-                    }
-                }
-            )
+            var isSortingFieldsVisible by remember {
+                mutableStateOf(
+                    runBlocking { dataStoreManager.getWhetherShowSortingSelectionFields().first() }
+                )
+            }
+
+            val (list, toggleButton, sortingFields) = createRefs()
 
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.constrainAs(list) {
+                    if (isSortingFieldsVisible) {
+                        top.linkTo(sortingFields.bottom)
+                    } else {
+                        top.linkTo(toggleButton.top)
+                    }
+
+                    bottom.linkTo(parent.bottom)
+                    height = Dimension.fillToConstraints
+                }
             ) {
                 if (viewModel.isWordbookEmpty) {
                     NoItemsNotification(
@@ -144,6 +146,43 @@ fun WordbooksScreen(
                     )
                 }
             }
+
+            VisibilityToggleButton(
+                modifier = Modifier.constrainAs(toggleButton) {
+                    top.linkTo(sortingFields.bottom)
+                    end.linkTo(parent.end, visibilityToggleButtonFromEndOfParent)
+                },
+                isVisibilityOn = isSortingFieldsVisible,
+                onClick = {
+                    isSortingFieldsVisible = !isSortingFieldsVisible
+
+                    composableScope.launch {
+                        dataStoreManager.storeWhetherShowSortingSelectionFields(isSortingFieldsVisible)
+                    }
+                }
+            )
+
+            SortingSelectionFields(
+                modifier = Modifier.constrainAs(sortingFields){},
+                isVisible = isSortingFieldsVisible,
+                sortingList = WordbookSorting.values(),
+                defaultSorting = runBlocking {
+                    WordbookSorting.valueOf(viewModel.wordbookSortingFlow.first())
+                },
+                defaultIsDescOrder = runBlocking {
+                    viewModel.wordbookSortingOrderFlow.first()
+                },
+                onOrderButtonClicked = { isDescOrder ->
+                    composableScope.launch {
+                        dataStoreManager.storeWordbookSortingOrder(isDescOrder)
+                    }
+                },
+                onSortingApplyClicked = { wordbookSorting ->
+                    composableScope.launch {
+                        dataStoreManager.storeWordbookSorting(wordbookSorting)
+                    }
+                }
+            )
 
         }
     }
