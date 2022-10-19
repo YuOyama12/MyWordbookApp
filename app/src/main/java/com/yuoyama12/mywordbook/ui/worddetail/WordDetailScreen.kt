@@ -131,7 +131,6 @@ private fun PortraitScreen(
             isEditNoteValid.value = !(isEditNoteValid.value)
         }
 
-
         SelectionContainer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -158,6 +157,7 @@ private fun PortraitScreen(
                 }
             )
         }
+
     }
 }
 
@@ -253,7 +253,6 @@ private fun LandscapeScreen(
                                 fontSize = textFontSize
                             )
                         }
-
                     }
                 )
             }

@@ -121,12 +121,7 @@ fun WordbooksScreen(
 
             Box(
                 modifier = Modifier.constrainAs(list) {
-                    if (isSortingFieldsVisible) {
-                        top.linkTo(sortingFields.bottom)
-                    } else {
-                        top.linkTo(toggleButton.top)
-                    }
-
+                    top.linkTo(toggleButton.top)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
                 }

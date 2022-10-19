@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -124,12 +125,15 @@ fun InsertWordDialog(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(shape = CircleShape, color = MaterialTheme.colors.surface)
+                            .background(color = MaterialTheme.colors.surface, shape = CircleShape)
                             .border(width = 0.8.dp, color = Color.Gray, shape = CircleShape)
                     ) {
                         val tags = runBlocking { dataStoreManager.getWordTags() }
 
                         LazyRowToSelectTag(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(color = MaterialTheme.colors.surface, shape = CircleShape),
                             tags = tags,
                         ) { tag ->
                             insertTagTextAfterCursor(
@@ -235,11 +239,13 @@ fun InsertWordDialog(
 
 @Composable
 private fun LazyRowToSelectTag(
+    modifier: Modifier = Modifier,
     tags: List<String>,
     onTagClicked: (String) -> Unit
 ) {
-
-    LazyRow(modifier = Modifier.padding(horizontal = 18.dp)) {
+    LazyRow(
+        modifier = modifier.padding(horizontal = 18.dp)
+    ) {
         items(tags) { tag ->
             TextButton(
                 modifier = Modifier

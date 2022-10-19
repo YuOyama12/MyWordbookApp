@@ -45,7 +45,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 private val fontSize = 16.sp
-private val cardMinHeight = 85.dp
 
 @Composable
 fun WordsScreen(
@@ -128,12 +127,7 @@ fun WordsScreen(
 
             Box(
                 modifier = Modifier.constrainAs(list) {
-                    if (isSortingFieldsVisible) {
-                        top.linkTo(sortingFields.bottom)
-                    } else {
-                        top.linkTo(toggleButton.top)
-                    }
-
+                    top.linkTo(toggleButton.top)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
                 }
@@ -224,7 +218,7 @@ fun WordsList(
                 backgroundColor = wordCardBackgroundColor(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = cardMinHeight)
+                    .heightIn(min = 85.dp)
                     .height(intrinsicSize = IntrinsicSize.Min)
                     .padding(
                         top = 10.dp,

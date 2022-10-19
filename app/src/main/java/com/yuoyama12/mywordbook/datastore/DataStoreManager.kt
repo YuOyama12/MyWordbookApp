@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private const val DATASTORE_NAME = "datastore"
-private val defaultWordTagsList = listOf("[名]", "[動]", "[形]", "[副]", "[前]", "[助動]")
 
 class DataStoreManager(private val context: Context) {
     companion object {
@@ -36,9 +35,9 @@ class DataStoreManager(private val context: Context) {
             preferences[SHOW_MEANING] ?: true
         }
 
-    suspend fun storeWhetherShowMeaning(bool: Boolean) {
+    suspend fun storeWhetherShowMeaning(isShown: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[SHOW_MEANING] = bool
+            preferences[SHOW_MEANING] = isShown
         }
     }
 
@@ -47,13 +46,15 @@ class DataStoreManager(private val context: Context) {
             preferences[SHOW_SORTING_SELECTION_FIELDS] ?: true
         }
 
-    suspend fun storeWhetherShowSortingSelectionFields(bool: Boolean) {
+    suspend fun storeWhetherShowSortingSelectionFields(isShown: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[SHOW_SORTING_SELECTION_FIELDS] = bool
+            preferences[SHOW_SORTING_SELECTION_FIELDS] = isShown
         }
     }
 
     suspend fun getWordTags(): SnapshotStateList<String> {
+        val defaultWordTagsList = listOf("[名]", "[動]", "[形]", "[副]", "[前]", "[助動]")
+
         val listType = object : TypeToken<SnapshotStateList<String>>(){}.type
 
         val wordTagsStr =
