@@ -39,6 +39,11 @@
     <string name="dialog_add_word_label_meaning">意味</string>
     <string name="dialog_add_word_message">*追加にはどちらかを入力している必要があります</string>
     <string name="dialog_add_word_consecutively_add_button">連続して追加</string>
+    <string name="dialog_discard_new_content_confirmation_title">入力内容の破棄</string>
+    <string name="dialog_discard_new_content_confirmation_message">入力されている内容を破棄しますか？</string>
+    <string name="dialog_discard_changed_content_confirmation_title">変更内容の破棄</string>
+    <string name="dialog_discard_changed_content_confirmation_message">内容が変更されています。変更内容を破棄しますか？</string>
+    <string name="dialog_discard_content_confirmation_positive_button">破棄</string>
     <string-array name="word_list_popup_menu">
         <item>単語情報の確認</item>
         <item>単語情報の変更</item>

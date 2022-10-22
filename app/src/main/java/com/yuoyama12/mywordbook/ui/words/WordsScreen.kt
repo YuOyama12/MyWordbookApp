@@ -101,12 +101,34 @@ fun WordsScreen(
                 )
 
                 if (openAddDialog) {
+                    val dialogViewModel: WordDialogViewModel = hiltViewModel()
+                    var openDiscardConfirmationDialog by rememberSaveable{ mutableStateOf(false) }
+
                     InsertWordDialog(
                         title = stringResource(R.string.dialog_add_word_title),
                         wordbookId = wordbook.id,
                         positiveButtonText = stringResource(R.string.dialog_add_wordbook_positive_button),
-                        onDismissRequest = { openAddDialog = false }
+                        onDialogClosed = { openAddDialog = false },
+                        onDismissRequest = {
+                            if (dialogViewModel.inputtedWord != dialogViewModel.preInputtedWord ||
+                                dialogViewModel.inputtedMeaning != dialogViewModel.preInputtedMeaning
+                            ) {
+                                openDiscardConfirmationDialog = true
+                            } else {
+                                openAddDialog = false
+                            }
+                        }
                     )
+
+                    if (openDiscardConfirmationDialog) {
+                        ConfirmationDialog(
+                            title = stringResource(R.string.dialog_discard_new_content_confirmation_title),
+                            message = stringResource(R.string.dialog_discard_new_content_confirmation_message),
+                            positiveButtonText = stringResource(R.string.dialog_discard_content_confirmation_positive_button),
+                            onDismissRequest = { openDiscardConfirmationDialog = false },
+                            onPositiveClicked = { openAddDialog = false }
+                        )
+                    }
                 }
 
             }
@@ -297,14 +319,37 @@ fun WordsList(
                 }
 
                 if (openEditDialog) {
+                    val dialogViewModel: WordDialogViewModel = hiltViewModel()
+                    var openDiscardConfirmationDialog by rememberSaveable{ mutableStateOf(false) }
+
+
                     InsertWordDialog(
                         title = stringResource(R.string.dialog_edit_word_title),
                         wordbookId = word.wordbookId,
                         word = word,
                         hasConsecutivelyAddButton = false,
                         positiveButtonText = stringResource(R.string.dialog_edit_word_positive_button),
-                        onDismissRequest = { openEditDialog = false }
+                        onDialogClosed = { openEditDialog = false },
+                        onDismissRequest = {
+                            if (dialogViewModel.inputtedWord != dialogViewModel.preInputtedWord ||
+                                dialogViewModel.inputtedMeaning != dialogViewModel.preInputtedMeaning
+                            ) {
+                                openDiscardConfirmationDialog = true
+                            } else {
+                                openEditDialog = false
+                            }
+                        }
                     )
+
+                    if (openDiscardConfirmationDialog) {
+                        ConfirmationDialog(
+                            title = stringResource(R.string.dialog_discard_changed_content_confirmation_title),
+                            message = stringResource(R.string.dialog_discard_changed_content_confirmation_message),
+                            positiveButtonText = stringResource(R.string.dialog_discard_content_confirmation_positive_button),
+                            onDismissRequest = { openDiscardConfirmationDialog = false },
+                            onPositiveClicked = { openEditDialog = false }
+                        )
+                    }
                 }
 
                 if (openSelectWordbookDialog) {

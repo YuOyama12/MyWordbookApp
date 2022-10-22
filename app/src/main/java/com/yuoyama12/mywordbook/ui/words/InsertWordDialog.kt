@@ -43,40 +43,39 @@ fun InsertWordDialog(
     word: Word? = null,
     hasConsecutivelyAddButton: Boolean = true,
     positiveButtonText: String,
+    onDialogClosed: () -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    val viewModel: WordsViewModel = hiltViewModel()
+    val wordViewModel: WordsViewModel = hiltViewModel()
+    val dialogViewModel: WordDialogViewModel = hiltViewModel()
+
     val context = LocalContext.current
     val dataStoreManager = DataStoreManager(context)
 
-    if (word != null) viewModel.nullifyTemporarilyStoredData()
+    val preInputtedWord = word?.word ?: ""
+    val preInputtedMeaning = word?.meaning ?: ""
 
-    val preInputtedWord = word?.word ?: viewModel.storedWordText ?: ""
-    val preInputtedMeaning = word?.meaning ?: viewModel.storedMeaningText ?: ""
+    var wordInfo by rememberSaveable {
+        dialogViewModel.setPreInputtedWord(preInputtedWord)
+        dialogViewModel.setInputtedWord(preInputtedWord)
 
-    var wordInfo by rememberSaveable { mutableStateOf(preInputtedWord) }
+        mutableStateOf(preInputtedWord)
+    }
 
     //意味テキストの状態のみ画面回転時等に破棄されないようにするため
     //別に定義しておく。
-    var meaningText by rememberSaveable { mutableStateOf(preInputtedMeaning) }
+    var meaningText by rememberSaveable {
+        dialogViewModel.setPreInputtedMeaning(preInputtedMeaning)
+        dialogViewModel.setInputtedMeaning(preInputtedMeaning)
+
+        mutableStateOf(preInputtedMeaning)
+    }
     var meaningInfo by remember {
         mutableStateOf(TextFieldValue( text = meaningText ))
     }
 
     Dialog(
-        onDismissRequest = {
-            //単語追加時のみ、誤ってダイアログを消してしまった場合、
-            //一時保存をしておくため。
-            if (word == null &&
-                (wordInfo.trim() != "" ||
-                        meaningInfo.text.trim() != "")
-            ) {
-                viewModel.storeTextsTemporarily(wordInfo, meaningInfo.text)
-            }
-
-
-            onDismissRequest()
-        }
+        onDismissRequest = { onDismissRequest() }
     ) {
         val focusManager = LocalFocusManager.current
 
@@ -109,7 +108,10 @@ fun InsertWordDialog(
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = wordInfo,
-                        onValueChange = { wordInfo = it },
+                        onValueChange = {
+                            wordInfo = it
+                            dialogViewModel.setInputtedWord(it)
+                        },
                         label = { Text(stringResource(R.string.dialog_add_word_label_word)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -133,7 +135,8 @@ fun InsertWordDialog(
                         LazyRowToSelectTag(
                             modifier = Modifier
                                 .clip(CircleShape)
-                                .background(color = MaterialTheme.colors.surface, shape = CircleShape),
+                                .background(color = MaterialTheme.colors.surface,
+                                    shape = CircleShape),
                             tags = tags,
                         ) { tag ->
                             insertTagTextAfterCursor(
@@ -168,6 +171,7 @@ fun InsertWordDialog(
                         onValueChange = {
                             meaningInfo = it
                             meaningText = it.text
+                            dialogViewModel.setInputtedMeaning(it.text)
                         },
                         label = { Text(stringResource(R.string.dialog_add_word_label_meaning)) }
                     )
@@ -183,13 +187,11 @@ fun InsertWordDialog(
                                 wordInfo = wordInfo,
                                 meaningInfo = meaningInfo.text,
                                 word = word,
-                                onDismissRequest = onDismissRequest
+                                onDismissRequest = onDialogClosed
                             ) { wordText, meaningText ->
 
-                                viewModel.nullifyTemporarilyStoredData()
-
                                 insertWord(
-                                    viewModel,
+                                    wordViewModel,
                                     word,
                                     wordbookId,
                                     wordText,
@@ -202,10 +204,7 @@ fun InsertWordDialog(
                         }
 
                         TextButton(
-                            onClick = {
-                                viewModel.nullifyTemporarilyStoredData()
-                                onDismissRequest()
-                            }
+                            onClick = { onDismissRequest() }
                         ) {
                             Text(stringResource(R.string.dialog_cancel))
                         }
@@ -215,25 +214,25 @@ fun InsertWordDialog(
                             wordInfo = wordInfo,
                             meaningInfo = meaningInfo.text,
                             word = word,
-                            onDismissRequest = onDismissRequest
+                            onDismissRequest = onDialogClosed
                         ) { wordText, meaningText ->
 
-                            viewModel.nullifyTemporarilyStoredData()
-
                             insertWord(
-                                viewModel,
+                                wordViewModel,
                                 word,
                                 wordbookId,
                                 wordText,
                                 meaningText
                             )
 
-                            onDismissRequest()
+                            onDialogClosed()
                         }
                     }
                 }
             }
         }
+
+
     }
 }
 

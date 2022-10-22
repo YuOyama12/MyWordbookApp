@@ -35,24 +35,8 @@ class WordsViewModel @Inject constructor(
     private var _isWordsListEmpty by mutableStateOf(words.isEmpty())
     val isWordsListEmpty get() = _isWordsListEmpty
 
-    private var _storedWordText: String? = null
-    val storedWordText get () = _storedWordText
-
-    private var _storedMeaningText: String? = null
-    val storedMeaningText get() = _storedMeaningText
-
     val currentDate: Date
         get() {  return Date(System.currentTimeMillis()) }
-
-    fun storeTextsTemporarily(wordText: String, meaningText: String) {
-        _storedWordText = wordText
-        _storedMeaningText = meaningText
-    }
-
-    fun nullifyTemporarilyStoredData() {
-        _storedWordText = null
-        _storedMeaningText = null
-    }
 
     suspend fun loadWordsBy(wordbookId: Long) {
         wordSortingFlow.flatMapLatest {
