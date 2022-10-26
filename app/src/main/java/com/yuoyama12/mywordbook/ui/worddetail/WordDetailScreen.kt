@@ -1,6 +1,7 @@
 package com.yuoyama12.mywordbook.ui.worddetail
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yuoyama12.mywordbook.R
+import com.yuoyama12.mywordbook.components.ConfirmationDialog
 import com.yuoyama12.mywordbook.data.Word
 import com.yuoyama12.mywordbook.ui.words.Header
 import com.yuoyama12.mywordbook.ui.words.WordsViewModel
@@ -37,6 +39,9 @@ fun WordDetailScreen(
     val isEditNoteValid = rememberSaveable { mutableStateOf(false) }
     val miscellaneousNote = rememberSaveable { mutableStateOf(word.miscellaneousNote) }
 
+    var isEditNoteContentChanged by rememberSaveable { mutableStateOf(false) }
+    var openDiscardConfirmationDialog by rememberSaveable{ mutableStateOf(false) }
+
     LaunchedEffect(configuration) {
         snapshotFlow { configuration.orientation }
             .collect { orientation = it }
@@ -48,7 +53,13 @@ fun WordDetailScreen(
                 title = { Text(stringResource(R.string.word_detail_screen_app_bar_header)) },
                 navigationIcon = {
                     IconButton(
-                        onClick = { onNavigationIconClicked() }
+                        onClick = {
+                            if (isEditNoteContentChanged) {
+                                openDiscardConfirmationDialog = true
+                            } else {
+                                onNavigationIconClicked()
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
@@ -63,16 +74,42 @@ fun WordDetailScreen(
             PortraitScreen(
                 word = word,
                 isEditNoteValid = isEditNoteValid,
-                miscellaneousNote = miscellaneousNote
+                miscellaneousNote = miscellaneousNote,
+                onEditNoteContentChanged = { isChanged ->
+                    isEditNoteContentChanged = isChanged
+                },
+                onConfirmClicked = { isEditNoteContentChanged = false }
             )
         } else {
             LandscapeScreen(
                 word = word,
                 isEditNoteValid = isEditNoteValid,
-                miscellaneousNote = miscellaneousNote
+                miscellaneousNote = miscellaneousNote,
+                onEditNoteContentChanged = { isChanged ->
+                    isEditNoteContentChanged = isChanged
+                },
+                onConfirmClicked = { isEditNoteContentChanged = false }
             )
         }
 
+        //TODO: チェック
+        BackHandler(enabled = true) {
+            if (isEditNoteContentChanged) {
+                openDiscardConfirmationDialog = true
+            } else {
+                onNavigationIconClicked()
+            }
+        }
+
+        if (openDiscardConfirmationDialog) {
+            ConfirmationDialog(
+                title = stringResource(R.string.dialog_discard_changed_content_confirmation_title),
+                message = stringResource(R.string.dialog_discard_changed_content_confirmation_message),
+                positiveButtonText = stringResource(R.string.dialog_discard_content_confirmation_positive_button),
+                onDismissRequest = { openDiscardConfirmationDialog = false },
+                onPositiveClicked = { onNavigationIconClicked() }
+            )
+        }
     }
 }
 
@@ -80,9 +117,12 @@ fun WordDetailScreen(
 private fun PortraitScreen(
     word: Word,
     isEditNoteValid: MutableState<Boolean>,
-    miscellaneousNote: MutableState<String>
+    miscellaneousNote: MutableState<String>,
+    onEditNoteContentChanged: (isChanged: Boolean) -> Unit,
+    onConfirmClicked: () -> Unit
 ) {
     val viewModel: WordsViewModel = hiltViewModel()
+    var restoredMiscellaneousNote by rememberSaveable { mutableStateOf(word.miscellaneousNote) }
 
     Column(Modifier.fillMaxSize()) {
 
@@ -126,6 +166,9 @@ private fun PortraitScreen(
                     word.copy(miscellaneousNote = note)
 
                 viewModel.insertWord(newWord)
+                restoredMiscellaneousNote = note
+
+                onConfirmClicked()
             }
 
             isEditNoteValid.value = !(isEditNoteValid.value)
@@ -142,7 +185,15 @@ private fun PortraitScreen(
                     if (isEditNoteValid.value) {
                         OutlinedTextField(
                             value = miscellaneousNote.value,
-                            onValueChange = { miscellaneousNote.value = it },
+                            onValueChange = {
+                                miscellaneousNote.value = it
+
+                                if (it != restoredMiscellaneousNote) {
+                                    onEditNoteContentChanged(true)
+                                } else {
+                                    onEditNoteContentChanged(false)
+                                }
+                            },
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
@@ -165,9 +216,12 @@ private fun PortraitScreen(
 private fun LandscapeScreen(
     word: Word,
     isEditNoteValid: MutableState<Boolean>,
-    miscellaneousNote: MutableState<String>
+    miscellaneousNote: MutableState<String>,
+    onEditNoteContentChanged: (isChanged: Boolean) -> Unit,
+    onConfirmClicked: () -> Unit
 ) {
     val viewModel: WordsViewModel = hiltViewModel()
+    var restoredMiscellaneousNote by rememberSaveable { mutableStateOf(word.miscellaneousNote) }
 
     Row(
         Modifier.fillMaxSize()
@@ -229,6 +283,9 @@ private fun LandscapeScreen(
                         word.copy(miscellaneousNote = note)
 
                     viewModel.insertWord(newWord)
+                    restoredMiscellaneousNote = note
+
+                    onConfirmClicked()
                 }
 
                 isEditNoteValid.value = !(isEditNoteValid.value)
@@ -244,7 +301,15 @@ private fun LandscapeScreen(
                         if (isEditNoteValid.value) {
                             OutlinedTextField(
                                 value = miscellaneousNote.value,
-                                onValueChange = { miscellaneousNote.value = it },
+                                onValueChange = {
+                                    miscellaneousNote.value = it
+
+                                    if (it != restoredMiscellaneousNote) {
+                                        onEditNoteContentChanged(true)
+                                    } else {
+                                        onEditNoteContentChanged(false)
+                                    }
+                                },
                             )
                         } else {
                             Text(
